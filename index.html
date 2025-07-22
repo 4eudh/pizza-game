@@ -14,11 +14,6 @@
                         primary: '#7C3AED',
                         secondary: '#EC4899',
                         accent: '#F59E0B',
-                        success: '#10B981',
-                        danger: '#EF4444',
-                    },
-                    fontFamily: {
-                        'creepster': ['Creepster', 'cursive'],
                     }
                 }
             }
@@ -27,10 +22,17 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@300;400;500;600;700;800&display=swap');
         
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
         }
         
         .game-title {
@@ -51,19 +53,38 @@
         
         .glass {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
         .btn-primary {
             background: linear-gradient(45deg, #7C3AED, #EC4899);
+            border: none;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .screen {
+            display: none;
+            min-height: 100vh;
+        }
+        
+        .screen.active {
+            display: flex;
         }
         
         .game-canvas {
@@ -73,11 +94,12 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+            width: 100%;
+            height: 400px;
         }
         
         .enemy, .trap {
             position: absolute;
-            transition: all 0.2s ease;
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -85,6 +107,7 @@
             font-weight: bold;
             color: white;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            font-size: 20px;
         }
         
         .health-bar {
@@ -104,11 +127,6 @@
             transition: width 0.3s ease;
         }
         
-        .path {
-            background: linear-gradient(90deg, #8B4513, #A0522D);
-            border-radius: 4px;
-        }
-        
         .notification {
             animation: slideIn 0.5s ease-out;
         }
@@ -118,28 +136,12 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
-        .screen {
-            display: none;
-        }
-        
-        .screen.active {
-            display: block;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(236, 72, 153, 0.2));
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-2px);
-        }
-        
         .trap-btn {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
             border: 2px solid transparent;
             transition: all 0.3s ease;
+            cursor: pointer;
+            color: white;
         }
         
         .trap-btn:hover {
@@ -156,15 +158,99 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        
+        .leaderboard-item {
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .leaderboard-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .settings-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #374151;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: #7C3AED;
+        }
+        
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+        }
+        
+        .toggle-switch.active::before {
+            transform: translateX(30px);
+        }
+        
+        .asset-placeholder {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            border: 2px dashed rgba(255, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 12px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .asset-placeholder:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            background: linear-gradient(45deg, #7c3aed, #a855f7);
+        }
+        
+        .rank-medal {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .rank-1 { background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; }
+        .rank-2 { background: linear-gradient(45deg, #C0C0C0, #A0A0A0); color: #000; }
+        .rank-3 { background: linear-gradient(45deg, #CD7F32, #B8860B); color: #fff; }
+        .rank-other { background: linear-gradient(45deg, #6B7280, #4B5563); color: #fff; }
+
+        @keyframes fadeUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-30px); opacity: 0; }
+        }
     </style>
 </head>
-<body class="text-white">
+<body>
     <!-- Authentication Screen -->
-    <div id="authScreen" class="screen active min-h-screen flex items-center justify-center p-6">
-        <div class="w-full max-w-md">
+    <div id="authScreen" class="screen active items-center justify-center p-6">
+        <div class="w-full max-w-md mx-auto">
             <div class="text-center mb-8">
-                <h1 class="game-title text-5xl mb-4">Vampire Pizzas!</h1>
-                <p class="text-gray-300">Defend your pizzeria from the undead!</p>
+                <h1 class="game-title text-5xl md:text-6xl mb-4">Vampire Pizzas!</h1>
+                <p class="text-gray-300 text-lg">Defend your pizzeria from the undead!</p>
             </div>
             
             <div class="glass rounded-2xl p-8">
@@ -175,23 +261,24 @@
                         <div>
                             <label class="block text-sm font-medium mb-2">Email</label>
                             <input type="email" id="loginEmail" 
-                                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-base focus:border-primary focus:outline-none">
+                                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-base text-white focus:border-primary focus:outline-none"
+                                   placeholder="Enter your email">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-2">Password</label>
                             <input type="password" id="loginPassword" 
-                                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-base focus:border-primary focus:outline-none">
+                                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-base text-white focus:border-primary focus:outline-none"
+                                   placeholder="Enter your password">
                         </div>
-                        <button id="loginBtn" class="w-full btn-primary py-3 rounded-lg font-semibold">
+                        <button id="loginBtn" class="w-full btn-primary py-3 rounded-lg font-semibold text-lg">
                             Sign In
                         </button>
-                        <div class="text-center space-y-2">
-                            <button id="showSignupBtn" class="text-primary hover:text-secondary transition-colors">
+                        <div class="text-center space-y-3">
+                            <button type="button" id="showSignupBtn" class="text-primary hover:text-secondary transition-colors block w-full">
                                 Don't have an account? Sign up
                             </button>
-                            <br>
-                            <button id="playAsGuestBtn" class="text-gray-400 hover:text-white transition-colors">
-                                Play as Guest
+                            <button type="button" id="playAsGuestBtn" class="text-accent hover:text-white transition-colors text-lg font-semibold block w-full py-2">
+                                🎮 Play as Guest
                             </button>
                         </div>
                     </div>
@@ -204,23 +291,26 @@
                         <div>
                             <label class="block text-sm font-medium mb-2">Username</label>
                             <input type="text" id="signupUsername" 
-                                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-base focus:border-primary focus:outline-none">
+                                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-base text-white focus:border-primary focus:outline-none"
+                                   placeholder="Choose a username">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-2">Email</label>
                             <input type="email" id="signupEmail" 
-                                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-base focus:border-primary focus:outline-none">
+                                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-base text-white focus:border-primary focus:outline-none"
+                                   placeholder="Enter your email">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-2">Password</label>
                             <input type="password" id="signupPassword" 
-                                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-base focus:border-primary focus:outline-none">
+                                   class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-base text-white focus:border-primary focus:outline-none"
+                                   placeholder="Create a password">
                         </div>
-                        <button id="signupBtn" class="w-full btn-primary py-3 rounded-lg font-semibold">
+                        <button id="signupBtn" class="w-full btn-primary py-3 rounded-lg font-semibold text-lg">
                             Create Account
                         </button>
                         <div class="text-center">
-                            <button id="showLoginBtn" class="text-primary hover:text-secondary transition-colors">
+                            <button type="button" id="showLoginBtn" class="text-primary hover:text-secondary transition-colors">
                                 Already have an account? Sign in
                             </button>
                         </div>
@@ -231,11 +321,11 @@
     </div>
     
     <!-- Main Menu -->
-    <div id="menuScreen" class="screen min-h-screen flex items-center justify-center p-6">
-        <div class="text-center">
-            <h1 class="game-title text-6xl mb-8">Vampire Pizzas!</h1>
+    <div id="menuScreen" class="screen items-center justify-center p-6">
+        <div class="text-center max-w-4xl mx-auto">
+            <h1 class="game-title text-6xl md:text-8xl mb-8">Vampire Pizzas!</h1>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto mb-8">
                 <button id="startGameBtn" class="glass rounded-2xl p-8 btn-primary hover:scale-105 transition-transform">
                     <div class="text-4xl mb-4">🎮</div>
                     <h3 class="text-xl font-bold mb-2">Start Game</h3>
@@ -254,61 +344,289 @@
                     <p class="text-gray-300">View your stats</p>
                 </button>
                 
-                <button id="logoutBtn" class="glass rounded-2xl p-8 hover:bg-red-500/20 hover:scale-105 transition-all">
-                    <div class="text-4xl mb-4">🚪</div>
-                    <h3 class="text-xl font-bold mb-2">Logout</h3>
-                    <p class="text-gray-300">Sign out</p>
+                <button id="settingsBtn" class="glass rounded-2xl p-8 hover:bg-white/10 hover:scale-105 transition-all">
+                    <div class="text-4xl mb-4">⚙️</div>
+                    <h3 class="text-xl font-bold mb-2">Settings</h3>
+                    <p class="text-gray-300">Game preferences</p>
                 </button>
             </div>
             
-            <div id="userInfo" class="mt-8 text-lg"></div>
+            <div class="flex justify-center gap-4 mb-8">
+                <button id="logoutBtn" class="glass rounded-xl px-6 py-3 hover:bg-red-500/20 transition-all">
+                    🚪 Logout
+                </button>
+            </div>
+            
+            <div id="userInfo" class="text-xl font-semibold"></div>
+        </div>
+    </div>
+    
+    <!-- Leaderboard Screen -->
+    <div id="leaderboardScreen" class="screen flex-col p-6">
+        <div class="max-w-4xl mx-auto w-full">
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="game-title text-4xl md:text-6xl">Leaderboard</h1>
+                <button id="backFromLeaderboardBtn" class="btn-primary px-6 py-3 rounded-lg">
+                    ← Back to Menu
+                </button>
+            </div>
+            
+            <div class="glass rounded-2xl p-6">
+                <div class="flex justify-center mb-6">
+                    <div class="flex space-x-2 bg-black/30 rounded-lg p-1">
+                        <button id="scoreLeaderboard" class="px-6 py-2 rounded-lg btn-primary">
+                            🏆 High Scores
+                        </button>
+                        <button id="waveLeaderboard" class="px-6 py-2 rounded-lg hover:bg-white/10 transition-colors">
+                            🌊 Max Waves
+                        </button>
+                        <button id="killsLeaderboard" class="px-6 py-2 rounded-lg hover:bg-white/10 transition-colors">
+                            ⚔️ Total Kills
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="leaderboardLoading" class="text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <p class="mt-2 text-gray-400">Loading leaderboard...</p>
+                </div>
+                
+                <div id="leaderboardContent" class="space-y-3 hidden">
+                    <!-- Leaderboard items will be populated here -->
+                </div>
+                
+                <div id="leaderboardError" class="text-center py-8 hidden">
+                    <p class="text-red-400 mb-4">Failed to load leaderboard</p>
+                    <button id="retryLeaderboard" class="btn-primary px-6 py-2 rounded-lg">
+                        Retry
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Screen -->
+    <div id="profileScreen" class="screen flex-col p-6">
+        <div class="max-w-4xl mx-auto w-full">
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="game-title text-4xl md:text-6xl">Profile</h1>
+                <button id="backFromProfileBtn" class="btn-primary px-6 py-3 rounded-lg">
+                    ← Back to Menu
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Player Info -->
+                <div class="glass rounded-2xl p-6">
+                    <h2 class="text-2xl font-bold mb-6">Player Information</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4">
+                            <img src="assets/ui/default_avatar.png" alt="User Avatar" class="w-20 h-20 rounded-full object-cover" onerror="this.outerHTML='<div class=&quot;w-20 h-20 asset-placeholder rounded-full&quot;>AVATAR<br>80x80px</div>'">
+                            <div>
+                                <div class="text-2xl font-bold" id="profileUsername">Username</div>
+                                <div class="text-gray-400" id="profileEmail">email@example.com</div>
+                                <div class="text-sm text-primary" id="profileJoinDate">Joined: --</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stats -->
+                <div class="glass rounded-2xl p-6">
+                    <h2 class="text-2xl font-bold mb-6">Statistics</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gradient-to-r from-purple-500/20 to-purple-600/20 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-purple-400" id="profileHighScore">0</div>
+                            <div class="text-sm text-gray-400">High Score</div>
+                        </div>
+                        <div class="bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-blue-400" id="profileMaxWave">0</div>
+                            <div class="text-sm text-gray-400">Max Wave</div>
+                        </div>
+                        <div class="bg-gradient-to-r from-red-500/20 to-red-600/20 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-red-400" id="profileTotalKills">0</div>
+                            <div class="text-sm text-gray-400">Total Kills</div>
+                        </div>
+                        <div class="bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-green-400" id="profileGamesPlayed">0</div>
+                            <div class="text-sm text-gray-400">Games Played</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Screen -->
+    <div id="settingsScreen" class="screen flex-col p-6">
+        <div class="max-w-4xl mx-auto w-full">
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="game-title text-4xl md:text-6xl">Settings</h1>
+                <button id="backFromSettingsBtn" class="btn-primary px-6 py-3 rounded-lg">
+                    ← Back to Menu
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Game Settings -->
+                <div class="glass rounded-2xl p-6">
+                    <h2 class="text-2xl font-bold mb-6">Game Settings</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-semibold">Auto-pause between waves</div>
+                                <div class="text-sm text-gray-400">Automatically pause when a wave ends</div>
+                            </div>
+                            <div class="toggle-switch" id="autoPauseToggle"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-semibold">Show damage numbers</div>
+                                <div class="text-sm text-gray-400">Display floating damage text</div>
+                            </div>
+                            <div class="toggle-switch active" id="damageNumbersToggle"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-semibold">Show trap ranges</div>
+                                <div class="text-sm text-gray-400">Display attack range circles</div>
+                            </div>
+                            <div class="toggle-switch active" id="trapRangesToggle"></div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block font-semibold">Default game speed</label>
+                            <select id="defaultSpeedSelect" class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-primary focus:outline-none">
+                                <option value="1">1x (Normal)</option>
+                                <option value="2">2x (Fast)</option>
+                                <option value="3">3x (Very Fast)</option>
+                                <option value="4">4x (Ultra Fast)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Audio Settings -->
+                <div class="glass rounded-2xl p-6">
+                    <h2 class="text-2xl font-bold mb-6">Audio Settings</h2>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-semibold">Sound effects</div>
+                                <div class="text-sm text-gray-400">Play game sound effects</div>
+                            </div>
+                            <div class="toggle-switch active" id="soundEffectsToggle"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-semibold">Background music</div>
+                                <div class="text-sm text-gray-400">Play background music</div>
+                            </div>
+                            <div class="toggle-switch active" id="backgroundMusicToggle"></div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <label class="block font-semibold">Master volume</label>
+                            <input type="range" id="masterVolumeSlider" min="0" max="100" value="80" 
+                                   class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                            <div class="text-center text-sm text-gray-400" id="volumeDisplay">80%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Visual Settings -->
+                <div class="glass rounded-2xl p-6">
+                    <h2 class="text-2xl font-bold mb-6">Visual Settings</h2>
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="block font-semibold">Graphics quality</label>
+                            <select id="graphicsQualitySelect" class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:border-primary focus:outline-none">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="ultra">Ultra</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-semibold">Particle effects</div>
+                                <div class="text-sm text-gray-400">Show explosions and effects</div>
+                            </div>
+                            <div class="toggle-switch active" id="particleEffectsToggle"></div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="font-semibold">Screen shake</div>
+                                <div class="text-sm text-gray-400">Camera shake on impacts</div>
+                            </div>
+                            <div class="toggle-switch active" id="screenShakeToggle"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Save Settings -->
+                <div class="text-center">
+                    <button id="saveSettingsBtn" class="btn-primary px-8 py-3 rounded-lg font-semibold">
+                        💾 Save Settings
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     
     <!-- Game Screen -->
-    <div id="gameScreen" class="screen min-h-screen p-4">
+    <div id="gameScreen" class="screen flex-col p-4">
         <div class="flex flex-col lg:flex-row gap-4 h-full">
             <!-- Main Game Area -->
             <div class="flex-1">
                 <!-- Top Bar -->
                 <div class="glass rounded-xl p-4 mb-4 flex items-center justify-between">
-                    <button id="backToMenuBtn" class="btn-primary px-4 py-2 rounded-lg">← Menu</button>
-                    <h2 class="game-title text-2xl">Wave <span id="currentWave">1</span></h2>
-                    <div class="flex gap-2">
-                        <button id="pauseGameBtn" class="bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded-lg">⏸️</button>
-                        <button id="speedBtn" class="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg">1x</button>
+                    <button id="backToMenuBtn" class="btn-primary px-6 py-3 rounded-lg">← Back to Menu</button>
+                    <h2 class="game-title text-3xl">Wave <span id="currentWave">1</span></h2>
+                    <div class="flex gap-3">
+                        <button id="pauseGameBtn" class="bg-yellow-500 hover:bg-yellow-600 px-4 py-3 rounded-lg font-semibold">⏸️ Pause</button>
+                        <button id="speedBtn" class="bg-blue-500 hover:bg-blue-600 px-4 py-3 rounded-lg font-semibold">1x Speed</button>
                     </div>
                 </div>
                 
                 <!-- Stats Bar -->
                 <div class="glass rounded-xl p-4 mb-4">
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div class="stat-card rounded-lg p-3 text-center">
-                            <div class="text-2xl font-bold text-yellow-400" id="pizzaBucks">30</div>
+                        <div class="bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-yellow-400" id="pizzaBucks">50</div>
                             <div class="text-sm text-gray-400">Pizza Bucks</div>
                         </div>
-                        <div class="stat-card rounded-lg p-3 text-center">
-                            <div class="text-2xl font-bold text-red-400" id="lives">3</div>
+                        <div class="bg-gradient-to-r from-red-500/20 to-red-600/20 rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-red-400" id="lives">3</div>
                             <div class="text-sm text-gray-400">Lives</div>
                         </div>
-                        <div class="stat-card rounded-lg p-3 text-center">
-                            <div class="text-2xl font-bold text-green-400" id="kills">0</div>
+                        <div class="bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-green-400" id="kills">0</div>
                             <div class="text-sm text-gray-400">Kills</div>
                         </div>
-                        <div class="stat-card rounded-lg p-3 text-center">
-                            <div class="text-2xl font-bold text-purple-400" id="score">0</div>
+                        <div class="bg-gradient-to-r from-purple-500/20 to-purple-600/20 rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-purple-400" id="score">0</div>
                             <div class="text-sm text-gray-400">Score</div>
                         </div>
-                        <div class="stat-card rounded-lg p-3 text-center">
-                            <div class="text-2xl font-bold text-blue-400" id="enemiesLeft">0</div>
+                        <div class="bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-blue-400" id="enemiesLeft">0</div>
                             <div class="text-sm text-gray-400">Enemies</div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Game Canvas -->
-                <div id="gameCanvas" class="game-canvas w-full aspect-video relative">
-                    <!-- Game entities will be added here -->
+                <div id="gameCanvas" class="game-canvas">
+                    <div class="absolute inset-0" style="background-image: url('assets/ui/game_background.jpg'); background-size: cover; background-position: center;" onerror="this.style.background='linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';">
+                    </div>
+                    
+                    <div class="absolute left-0 top-0 w-32 h-full" style="background-image: url('assets/ui/path.png'); background-repeat: repeat-y; background-size: 128px auto;" onerror="this.style.background='linear-gradient(90deg, #8B4513 0%, #A0522D 100%)';">
+                    </div>
                 </div>
             </div>
             
@@ -316,32 +634,35 @@
             <div class="w-full lg:w-80 space-y-4">
                 <!-- Trap Shop -->
                 <div class="glass rounded-xl p-4">
-                    <h3 class="text-xl font-bold mb-4 text-center">Trap Shop</h3>
-                    <div class="grid grid-cols-2 gap-3" id="trapShop">
+                    <h3 class="text-xl font-bold mb-4 text-center text-primary">Trap Shop</h3>
+                    <div class="grid grid-cols-1 gap-3" id="trapShop">
                         <!-- Trap buttons will be populated here -->
                     </div>
                 </div>
                 
                 <!-- Wave Progress -->
                 <div class="glass rounded-xl p-4">
-                    <h3 class="text-xl font-bold mb-4 text-center">Wave Progress</h3>
+                    <h3 class="text-xl font-bold mb-4 text-center text-blue-400">Wave Progress</h3>
                     <div class="space-y-3">
                         <div class="flex justify-between text-sm">
                             <span>Next Wave:</span>
-                            <span id="waveTimer" class="text-blue-400">30s</span>
+                            <span id="waveTimer" class="text-blue-400 font-bold">30s</span>
                         </div>
-                        <div class="w-full bg-gray-700 rounded-full h-2">
-                            <div id="waveProgress" class="bg-blue-400 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                        <div class="w-full bg-gray-700 rounded-full h-3">
+                            <div id="waveProgress" class="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-1000" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Actions -->
                 <div class="glass rounded-xl p-4">
-                    <h3 class="text-xl font-bold mb-4 text-center">Actions</h3>
-                    <div class="space-y-2">
-                        <button id="sellModeBtn" class="w-full bg-red-500/20 hover:bg-red-500/30 py-2 rounded-lg transition-colors">
+                    <h3 class="text-xl font-bold mb-4 text-center text-green-400">Actions</h3>
+                    <div class="space-y-3">
+                        <button id="sellModeBtn" class="w-full bg-red-500/20 hover:bg-red-500/30 py-3 rounded-lg transition-colors font-semibold">
                             💰 Sell Mode
+                        </button>
+                        <button id="clearAllBtn" class="w-full bg-orange-500/20 hover:bg-orange-500/30 py-3 rounded-lg transition-colors font-semibold">
+                            🗑️ Clear All Traps
                         </button>
                     </div>
                 </div>
@@ -352,24 +673,24 @@
     <!-- Modals -->
     <div id="pauseModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="glass rounded-2xl p-8 max-w-md w-full mx-4">
-            <h2 class="text-2xl font-bold text-center mb-6">Game Paused</h2>
+            <h2 class="text-3xl font-bold text-center mb-6 game-title">Game Paused</h2>
             <div class="space-y-4">
-                <button id="resumeBtn" class="w-full btn-primary py-3 rounded-lg">Resume</button>
-                <button id="restartBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 py-3 rounded-lg">Restart</button>
-                <button id="quitBtn" class="w-full bg-red-500 hover:bg-red-600 py-3 rounded-lg">Quit to Menu</button>
+                <button id="resumeBtn" class="w-full btn-primary py-4 rounded-lg text-lg font-semibold">▶️ Resume Game</button>
+                <button id="restartBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 py-4 rounded-lg text-lg font-semibold">🔄 Restart Wave</button>
+                <button id="quitBtn" class="w-full bg-red-500 hover:bg-red-600 py-4 rounded-lg text-lg font-semibold">🏠 Quit to Menu</button>
             </div>
         </div>
     </div>
     
     <div id="gameOverModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="glass rounded-2xl p-8 max-w-md w-full mx-4">
-            <h2 id="gameOverTitle" class="text-2xl font-bold text-center mb-6">Game Over!</h2>
+            <h2 id="gameOverTitle" class="text-3xl font-bold text-center mb-6 game-title">Game Over!</h2>
             <div id="finalStats" class="text-center mb-6">
                 <!-- Stats will be populated here -->
             </div>
             <div class="space-y-4">
-                <button id="playAgainBtn" class="w-full btn-primary py-3 rounded-lg">Play Again</button>
-                <button id="menuBtn" class="w-full bg-gray-500 hover:bg-gray-600 py-3 rounded-lg">Main Menu</button>
+                <button id="playAgainBtn" class="w-full btn-primary py-4 rounded-lg text-lg font-semibold">🎮 Play Again</button>
+                <button id="menuBtn" class="w-full bg-gray-500 hover:bg-gray-600 py-4 rounded-lg text-lg font-semibold">🏠 Main Menu</button>
             </div>
         </div>
     </div>
@@ -393,19 +714,72 @@
                 supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
         } catch (e) {
-            console.log('Supabase not configured, using local storage');
+            console.log('Supabase not configured, using demo mode');
         }
         
         // ============================================
-        // GAME STATE
+        // ASSET PATHS CONFIGURATION
+        // ============================================
+        
+        const ASSET_PATHS = {
+            // REPLACE THESE PATHS WITH YOUR ACTUAL ASSETS
+            enemies: {
+                basic: 'assets/enemies/vampire.png',     // 40x40px
+                fast: 'assets/enemies/fast_pizza.png',       // 40x40px  
+                tank: 'assets/enemies/tank_pizza.png',       // 40x40px
+                flying: 'assets/enemies/flying_pizza.png',   // 40x40px
+                boss: 'assets/enemies/boss_pizza.png'        // 60x60px
+            },
+            
+            traps: {
+                garlic: 'assets/traps/garlic_trap.png',      // 40x40px
+                cutter: 'assets/traps/pizza_cutter.png',     // 40x40px
+                holy_water: 'assets/traps/holy_water.png',   // 40x40px
+                mirror: 'assets/traps/sacred_mirror.png',    // 40x40px
+                stake: 'assets/traps/stake_launcher.png',    // 40x40px
+                generator: 'assets/traps/money_gen.png'      // 40x40px
+            },
+            
+            ui: {
+                game_background: 'game_background.jpg',    // 800x400px
+                path_texture: 'assets/ui/path.png',          // 128x400px
+                user_avatar: 'assets/ui/default_avatar.png', // 80x80px
+                logo: 'assets/ui/logo.png',                  // 200x100px
+                button_bg: 'assets/ui/button_bg.png'         // 100x40px
+            },
+            
+            effects: {
+                explosion: 'assets/effects/explosion.png',   // 60x60px
+                projectile: 'assets/effects/projectile.png', // 8x8px
+                blood_splat: 'assets/effects/blood.png',     // 30x30px
+                coin_pickup: 'assets/effects/coin.png'       // 20x20px
+            }
+        };
+        
+        // ============================================
+        // GLOBAL STATE
         // ============================================
         
         let currentUser = null;
+        let gameLoop = null;
+        let userSettings = {
+            autoPause: false,
+            showDamageNumbers: true,
+            showTrapRanges: true,
+            defaultSpeed: 1,
+            soundEffects: true,
+            backgroundMusic: true,
+            masterVolume: 80,
+            graphicsQuality: 'medium',
+            particleEffects: true,
+            screenShake: true
+        };
+        
         let gameState = {
             playing: false,
             paused: false,
             wave: 1,
-            pizzaBucks: 30,
+            pizzaBucks: 50,
             lives: 3,
             score: 0,
             kills: 0,
@@ -415,38 +789,381 @@
             waveTimer: 30,
             enemies: [],
             traps: [],
-            frameCount: 0
+            frameCount: 0,
+            spawnTimer: 0
         };
         
         // Game configuration
         const CONFIG = {
             WAVE_DURATION: 30, // seconds
-            SPAWN_RATE: 2, // seconds between spawns
-            CANVAS_WIDTH: 800,
-            CANVAS_HEIGHT: 450,
-            TILE_SIZE: 50
+            SPAWN_INTERVAL: 2, // seconds between spawns
+            ENEMY_SPEED: 2, // pixels per frame
+            TRAP_COOLDOWN: 60 // frames
         };
         
-        // Asset definitions with placeholders
+        // Asset definitions
         const ENEMY_TYPES = {
-            basic: { name: 'Basic Pizza', health: 100, speed: 1, reward: 10, color: '#8B4513' },
-            fast: { name: 'Fast Pizza', health: 60, speed: 2, reward: 15, color: '#FF4500' },
-            tank: { name: 'Tank Pizza', health: 200, speed: 0.5, reward: 25, color: '#2F4F4F' }
+            basic: { 
+                name: 'Basic Pizza', 
+                health: 100, 
+                speed: 1, 
+                reward: 10, 
+                color: '#8B4513', 
+                sprite: ASSET_PATHS.enemies.basic,
+                fallback: '🍕' 
+            },
+            fast: { 
+                name: 'Fast Pizza', 
+                health: 60, 
+                speed: 2, 
+                reward: 15, 
+                color: '#FF4500', 
+                sprite: ASSET_PATHS.enemies.fast,
+                fallback: '⚡' 
+            },
+            tank: { 
+                name: 'Tank Pizza', 
+                health: 200, 
+                speed: 0.5, 
+                reward: 25, 
+                color: '#2F4F4F', 
+                sprite: ASSET_PATHS.enemies.tank,
+                fallback: '🛡️' 
+            }
         };
         
         const TRAP_TYPES = {
-            garlic: { name: 'Garlic Trap', cost: 15, damage: 20, range: 100, color: '#FFFACD', icon: '🧄' },
-            cutter: { name: 'Pizza Cutter', cost: 25, damage: 35, range: 80, color: '#C0C0C0', icon: '🔪' },
-            holy_water: { name: 'Holy Water', cost: 40, damage: 50, range: 120, color: '#87CEEB', icon: '💧' }
+            garlic: { 
+                name: 'Garlic Trap', 
+                cost: 15, 
+                damage: 25, 
+                range: 100, 
+                color: '#FFFACD', 
+                sprite: ASSET_PATHS.traps.garlic,
+                fallback: '🧄' 
+            },
+            cutter: { 
+                name: 'Pizza Cutter', 
+                cost: 25, 
+                damage: 40, 
+                range: 80, 
+                color: '#C0C0C0', 
+                sprite: ASSET_PATHS.traps.cutter,
+                fallback: '🔪' 
+            },
+            holy_water: { 
+                name: 'Holy Water', 
+                cost: 40, 
+                damage: 60, 
+                range: 120, 
+                color: '#87CEEB', 
+                sprite: ASSET_PATHS.traps.holy_water,
+                fallback: '💧' 
+            }
         };
+        
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notifications');
+            const notification = document.createElement('div');
+            
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            };
+            
+            notification.className = `notification ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg font-semibold`;
+            notification.textContent = message;
+            
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        function loadImage(src, fallback) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = () => resolve(fallback);
+                img.src = src;
+            });
+        }
+        
+        // ============================================
+        // SETTINGS MANAGEMENT
+        // ============================================
+        
+        function loadSettings() {
+            const saved = localStorage.getItem('gameSettings');
+            if (saved) {
+                userSettings = { ...userSettings, ...JSON.parse(saved) };
+            }
+            updateSettingsUI();
+        }
+        
+        function saveSettings() {
+            localStorage.setItem('gameSettings', JSON.stringify(userSettings));
+            showNotification('Settings saved successfully!', 'success');
+        }
+        
+        function updateSettingsUI() {
+            // Update toggles
+            document.getElementById('autoPauseToggle').classList.toggle('active', userSettings.autoPause);
+            document.getElementById('damageNumbersToggle').classList.toggle('active', userSettings.showDamageNumbers);
+            document.getElementById('trapRangesToggle').classList.toggle('active', userSettings.showTrapRanges);
+            document.getElementById('soundEffectsToggle').classList.toggle('active', userSettings.soundEffects);
+            document.getElementById('backgroundMusicToggle').classList.toggle('active', userSettings.backgroundMusic);
+            document.getElementById('particleEffectsToggle').classList.toggle('active', userSettings.particleEffects);
+            document.getElementById('screenShakeToggle').classList.toggle('active', userSettings.screenShake);
+            
+            // Update selects and sliders
+            document.getElementById('defaultSpeedSelect').value = userSettings.defaultSpeed;
+            document.getElementById('graphicsQualitySelect').value = userSettings.graphicsQuality;
+            document.getElementById('masterVolumeSlider').value = userSettings.masterVolume;
+            document.getElementById('volumeDisplay').textContent = `${userSettings.masterVolume}%`;
+        }
+        
+        function setupSettingsEvents() {
+            // Toggle switches
+            document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    toggle.classList.toggle('active');
+                    
+                    const settingMap = {
+                        'autoPauseToggle': 'autoPause',
+                        'damageNumbersToggle': 'showDamageNumbers',
+                        'trapRangesToggle': 'showTrapRanges',
+                        'soundEffectsToggle': 'soundEffects',
+                        'backgroundMusicToggle': 'backgroundMusic',
+                        'particleEffectsToggle': 'particleEffects',
+                        'screenShakeToggle': 'screenShake'
+                    };
+                    
+                    const setting = settingMap[toggle.id];
+                    if (setting) {
+                        userSettings[setting] = toggle.classList.contains('active');
+                    }
+                });
+            });
+            
+            // Select dropdowns
+            document.getElementById('defaultSpeedSelect').addEventListener('change', (e) => {
+                userSettings.defaultSpeed = parseInt(e.target.value);
+            });
+            
+            document.getElementById('graphicsQualitySelect').addEventListener('change', (e) => {
+                userSettings.graphicsQuality = e.target.value;
+            });
+            
+            // Volume slider
+            const volumeSlider = document.getElementById('masterVolumeSlider');
+            const volumeDisplay = document.getElementById('volumeDisplay');
+            
+            volumeSlider.addEventListener('input', (e) => {
+                userSettings.masterVolume = parseInt(e.target.value);
+                volumeDisplay.textContent = `${userSettings.masterVolume}%`;
+            });
+            
+            // Save button
+            document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+        }
+        
+        // ============================================
+        // LEADERBOARD FUNCTIONS
+        // ============================================
+        
+        async function loadLeaderboard(type = 'score') {
+            const loadingEl = document.getElementById('leaderboardLoading');
+            const contentEl = document.getElementById('leaderboardContent');
+            const errorEl = document.getElementById('leaderboardError');
+            
+            loadingEl.classList.remove('hidden');
+            contentEl.classList.add('hidden');
+            errorEl.classList.add('hidden');
+            
+            try {
+                let data = [];
+                
+                if (supabase) {
+                    // Real Supabase query
+                    const { data: leaderboardData, error } = await supabase
+                        .from('leaderboards')
+                        .select('*')
+                        .eq('leaderboard_type', type)
+                        .order('rank')
+                        .limit(50);
+                    
+                    if (error) throw error;
+                    data = leaderboardData || [];
+                } else {
+                    // Demo data
+                    data = generateDemoLeaderboard(type);
+                }
+                
+                displayLeaderboard(data, type);
+                
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                loadingEl.classList.add('hidden');
+                errorEl.classList.remove('hidden');
+            }
+        }
+        
+        function generateDemoLeaderboard(type) {
+            const names = ['PizzaMaster2024', 'VampireSlayer', 'GarlicGuru', 'DefenseKing', 'TrapLord', 
+                          'PizzaHunter', 'GhostBuster', 'TowerMaster', 'FlameGuard', 'ShadowWard'];
+            
+            return names.map((username, index) => ({
+                rank: index + 1,
+                username,
+                value: type === 'score' ? Math.floor(Math.random() * 100000) + 10000 :
+                       type === 'waves' ? Math.floor(Math.random() * 30) + 5 :
+                       Math.floor(Math.random() * 1000) + 100,
+                secondary_value: Math.floor(Math.random() * 50) + 10,
+                country: 'US'
+            })).sort((a, b) => b.value - a.value).map((item, index) => ({ ...item, rank: index + 1 }));
+        }
+        
+        function displayLeaderboard(data, type) {
+            const loadingEl = document.getElementById('leaderboardLoading');
+            const contentEl = document.getElementById('leaderboardContent');
+            
+            loadingEl.classList.add('hidden');
+            contentEl.classList.remove('hidden');
+            
+            const typeLabels = {
+                score: { main: 'Score', secondary: 'Wave' },
+                waves: { main: 'Wave', secondary: 'Score' },
+                kills: { main: 'Kills', secondary: 'Games' }
+            };
+            
+            contentEl.innerHTML = data.map(player => `
+                <div class="leaderboard-item rounded-lg p-4 flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="rank-medal ${getRankClass(player.rank)}">
+                            ${player.rank}
+                        </div>
+                        <img src="${ASSET_PATHS.ui.user_avatar}" alt="User Avatar" class="w-12 h-12 rounded-full object-cover" onerror="this.outerHTML='<div class=&quot;w-12 h-12 asset-placeholder rounded-full text-xs&quot;>AVATAR<br>48x48</div>'">
+                        <div>
+                            <div class="font-bold text-lg">${player.username}</div>
+                            <div class="text-sm text-gray-400">${typeLabels[type].secondary}: ${player.secondary_value.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-primary">${player.value.toLocaleString()}</div>
+                        <div class="text-sm text-gray-400">${typeLabels[type].main}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getRankClass(rank) {
+            if (rank === 1) return 'rank-1';
+            if (rank === 2) return 'rank-2';
+            if (rank === 3) return 'rank-3';
+            return 'rank-other';
+        }
+        
+        function setupLeaderboardEvents() {
+            document.getElementById('scoreLeaderboard').addEventListener('click', () => {
+                setActiveLeaderboardTab('scoreLeaderboard');
+                loadLeaderboard('score');
+            });
+            
+            document.getElementById('waveLeaderboard').addEventListener('click', () => {
+                setActiveLeaderboardTab('waveLeaderboard');
+                loadLeaderboard('waves');
+            });
+            
+            document.getElementById('killsLeaderboard').addEventListener('click', () => {
+                setActiveLeaderboardTab('killsLeaderboard');
+                loadLeaderboard('kills');
+            });
+            
+            document.getElementById('retryLeaderboard').addEventListener('click', () => {
+                loadLeaderboard('score');
+            });
+        }
+        
+        function setActiveLeaderboardTab(activeId) {
+            ['scoreLeaderboard', 'waveLeaderboard', 'killsLeaderboard'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (id === activeId) {
+                    btn.className = 'px-6 py-2 rounded-lg btn-primary';
+                } else {
+                    btn.className = 'px-6 py-2 rounded-lg hover:bg-white/10 transition-colors';
+                }
+            });
+        }
+        
+        // ============================================
+        // PROFILE FUNCTIONS
+        // ============================================
+        
+        async function loadProfile() {
+            if (!currentUser) return;
+            
+            const username = currentUser.user_metadata?.username || currentUser.email?.split('@')[0] || 'Player';
+            document.getElementById('profileUsername').textContent = username;
+            document.getElementById('profileEmail').textContent = currentUser.email || 'guest@example.com';
+            
+            if (supabase && currentUser.id !== 'guest') {
+                try {
+                    const { data: stats } = await supabase
+                        .from('user_statistics')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .single();
+                    
+                    if (stats) {
+                        document.getElementById('profileHighScore').textContent = stats.highest_score?.toLocaleString() || '0';
+                        document.getElementById('profileMaxWave').textContent = stats.highest_wave || '0';
+                        document.getElementById('profileTotalKills').textContent = stats.total_enemies_killed?.toLocaleString() || '0';
+                        document.getElementById('profileGamesPlayed').textContent = stats.total_games_played || '0';
+                    }
+                } catch (error) {
+                    console.error('Error loading profile:', error);
+                }
+            } else {
+                // Load from localStorage for guests/demo
+                const savedStats = localStorage.getItem(`userStats_${currentUser.id}`);
+                if (savedStats) {
+                    const stats = JSON.parse(savedStats);
+                    document.getElementById('profileHighScore').textContent = stats.highScore?.toLocaleString() || '0';
+                    document.getElementById('profileMaxWave').textContent = stats.maxWave || '0';
+                    document.getElementById('profileTotalKills').textContent = stats.totalKills?.toLocaleString() || '0';
+                    document.getElementById('profileGamesPlayed').textContent = stats.gamesPlayed || '0';
+                }
+            }
+            
+            // Set join date
+            const joinDate = currentUser.created_at ? 
+                new Date(currentUser.created_at).toLocaleDateString() : 
+                new Date().toLocaleDateString();
+            document.getElementById('profileJoinDate').textContent = `Joined: ${joinDate}`;
+        }
         
         // ============================================
         // AUTHENTICATION
         // ============================================
         
         async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
             
             if (!email || !password) {
                 showNotification('Please fill in all fields', 'error');
@@ -465,17 +1182,21 @@
                     showNotification('Login failed: ' + error.message, 'error');
                 }
             } else {
-                // Fallback for demo
-                currentUser = { id: 'demo', email: email };
+                // Demo mode
+                currentUser = { 
+                    id: 'user_' + Date.now(), 
+                    email: email, 
+                    user_metadata: { username: email.split('@')[0] } 
+                };
                 showNotification('Logged in (demo mode)', 'success');
                 showMainMenu();
             }
         }
         
         async function handleSignup() {
-            const username = document.getElementById('signupUsername').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value.trim();
             
             if (!username || !email || !password) {
                 showNotification('Please fill in all fields', 'error');
@@ -498,16 +1219,25 @@
                     showNotification('Signup failed: ' + error.message, 'error');
                 }
             } else {
-                // Fallback for demo
-                currentUser = { id: 'demo', email: email, user_metadata: { username } };
+                // Demo mode
+                currentUser = { 
+                    id: 'user_' + Date.now(), 
+                    email: email, 
+                    user_metadata: { username: username } 
+                };
                 showNotification('Account created (demo mode)', 'success');
                 showMainMenu();
             }
         }
         
         function playAsGuest() {
-            currentUser = { id: 'guest', email: 'guest@example.com', user_metadata: { username: 'Guest' } };
-            showNotification('Playing as guest', 'info');
+            currentUser = { 
+                id: 'guest_' + Date.now(), 
+                email: 'guest@example.com', 
+                user_metadata: { username: 'Guest Player' } 
+            };
+            
+            showNotification('Playing as guest!', 'success');
             showMainMenu();
         }
         
@@ -516,24 +1246,18 @@
                 await supabase.auth.signOut();
             }
             currentUser = null;
-            showScreen('authScreen');
             showNotification('Logged out successfully', 'info');
-        }
-        
-        // ============================================
-        // SCREEN MANAGEMENT
-        // ============================================
-        
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
+            showScreen('authScreen');
         }
         
         function showMainMenu() {
-            const username = currentUser?.user_metadata?.username || currentUser?.email?.split('@')[0] || 'Player';
-            document.getElementById('userInfo').textContent = `Welcome, ${username}!`;
+            if (!currentUser) {
+                showScreen('authScreen');
+                return;
+            }
+            
+            const username = currentUser.user_metadata?.username || currentUser.email?.split('@')[0] || 'Player';
+            document.getElementById('userInfo').textContent = `Welcome back, ${username}!`;
             showScreen('menuScreen');
         }
         
@@ -542,27 +1266,32 @@
         // ============================================
         
         function initGame() {
+            // Reset game state
             gameState = {
                 playing: true,
                 paused: false,
                 wave: 1,
-                pizzaBucks: 30,
+                pizzaBucks: 50,
                 lives: 3,
                 score: 0,
                 kills: 0,
                 selectedTrap: null,
                 sellMode: false,
-                gameSpeed: 1,
+                gameSpeed: userSettings.defaultSpeed,
                 waveTimer: 30,
                 enemies: [],
                 traps: [],
-                frameCount: 0
+                frameCount: 0,
+                spawnTimer: 0
             };
             
             setupTrapShop();
+            clearCanvas();
             updateUI();
             showScreen('gameScreen');
             startGameLoop();
+            
+            showNotification('Game started! Defend your pizzeria!', 'success');
         }
         
         function setupTrapShop() {
@@ -571,11 +1300,19 @@
             
             Object.entries(TRAP_TYPES).forEach(([key, trap]) => {
                 const button = document.createElement('button');
-                button.className = 'trap-btn rounded-lg p-3 text-center';
+                button.className = 'trap-btn rounded-lg p-4 text-center w-full';
+                
+                // Use actual sprite or fallback based on graphics quality
+                const useImage = userSettings.graphicsQuality !== 'low';
+                const display = useImage ? 
+                    `<img src="${trap.sprite}" alt="${trap.fallback}" class="w-8 h-8 mx-auto mb-2 object-cover" onerror="this.outerHTML='<div class=&quot;text-3xl mb-2&quot;>${trap.fallback}</div>'">` :
+                    `<div class="text-3xl mb-2">${trap.fallback}</div>`;
+                
                 button.innerHTML = `
-                    <div class="text-2xl mb-1">${trap.icon}</div>
+                    ${display}
                     <div class="text-sm font-bold">${trap.name}</div>
-                    <div class="text-xs text-yellow-400">$${trap.cost}</div>
+                    <div class="text-xs text-yellow-400 mb-1">$${trap.cost}</div>
+                    <div class="text-xs text-gray-400">Damage: ${trap.damage}</div>
                 `;
                 button.addEventListener('click', () => selectTrap(key));
                 button.id = `trap_${key}`;
@@ -589,7 +1326,7 @@
                 gameState.selectedTrap = trapType;
                 gameState.sellMode = false;
                 updateTrapButtons();
-                showNotification(`Selected ${trap.name}`, 'info');
+                showNotification(`Selected ${trap.name} - Click on canvas to place!`, 'info');
             } else {
                 showNotification('Not enough Pizza Bucks!', 'error');
             }
@@ -622,11 +1359,13 @@
                 type: randomType,
                 x: 800,
                 y: 50 + Math.random() * 300,
-                health: enemyTemplate.health,
-                maxHealth: enemyTemplate.health,
+                health: enemyTemplate.health * (1 + gameState.wave * 0.1),
+                maxHealth: enemyTemplate.health * (1 + gameState.wave * 0.1),
                 speed: enemyTemplate.speed,
                 reward: enemyTemplate.reward,
-                color: enemyTemplate.color
+                color: enemyTemplate.color,
+                sprite: enemyTemplate.sprite,
+                fallback: enemyTemplate.fallback
             };
             
             gameState.enemies.push(enemy);
@@ -646,7 +1385,13 @@
                 background: ${enemy.color};
                 z-index: 10;
             `;
-            element.textContent = '🍕';
+            
+            // Use sprite or fallback based on graphics quality
+            if (userSettings.graphicsQuality !== 'low') {
+                element.innerHTML = `<img src="${enemy.sprite}" alt="${enemy.fallback}" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=&quot;w-full h-full flex items-center justify-center text-xl&quot;>${enemy.fallback}</div>'">`;
+            } else {
+                element.textContent = enemy.fallback;
+            }
             
             // Health bar
             const healthBar = document.createElement('div');
@@ -677,6 +1422,7 @@
                     gameState.lives--;
                     element?.remove();
                     gameState.enemies.splice(index, 1);
+                    showNotification('Pizza escaped! Life lost!', 'error');
                     
                     if (gameState.lives <= 0) {
                         gameOver();
@@ -691,8 +1437,33 @@
                     gameState.kills++;
                     element?.remove();
                     gameState.enemies.splice(index, 1);
+                    
+                    // Show damage numbers if enabled
+                    if (userSettings.showDamageNumbers) {
+                        showDamageNumber(enemy.x, enemy.y, enemy.reward);
+                    }
                 }
             });
+        }
+        
+        function showDamageNumber(x, y, amount) {
+            const canvas = document.getElementById('gameCanvas');
+            const damageText = document.createElement('div');
+            damageText.style.cssText = `
+                position: absolute;
+                left: ${x}px;
+                top: ${y}px;
+                color: #10B981;
+                font-weight: bold;
+                font-size: 14px;
+                z-index: 20;
+                pointer-events: none;
+                animation: fadeUp 1s ease-out forwards;
+            `;
+            damageText.textContent = `+$${amount}`;
+            
+            canvas.appendChild(damageText);
+            setTimeout(() => damageText.remove(), 1000);
         }
         
         function updateTraps() {
@@ -703,7 +1474,7 @@
                     const nearestEnemy = findNearestEnemy(trap);
                     if (nearestEnemy) {
                         attackEnemy(trap, nearestEnemy);
-                        trap.cooldown = 30; // 0.5 second cooldown at 60fps
+                        trap.cooldown = CONFIG.TRAP_COOLDOWN;
                     }
                 }
             });
@@ -731,8 +1502,13 @@
         function attackEnemy(trap, enemy) {
             enemy.health -= trap.damage;
             
-            // Visual attack effect
-            createAttackEffect(trap.x, trap.y, enemy.x, enemy.y);
+            if (userSettings.particleEffects) {
+                createAttackEffect(trap.x, trap.y, enemy.x, enemy.y);
+            }
+            
+            if (userSettings.showDamageNumbers) {
+                showDamageNumber(enemy.x, enemy.y - 20, trap.damage);
+            }
         }
         
         function createAttackEffect(fromX, fromY, toX, toY) {
@@ -742,12 +1518,13 @@
                 position: absolute;
                 left: ${fromX}px;
                 top: ${fromY}px;
-                width: 4px;
-                height: 4px;
-                background: #FFD700;
+                width: 6px;
+                height: 6px;
+                background: linear-gradient(45deg, #FFD700, #FFA500);
                 border-radius: 50%;
                 z-index: 15;
                 transition: all 0.3s ease;
+                box-shadow: 0 0 10px #FFD700;
             `;
             
             canvas.appendChild(projectile);
@@ -763,12 +1540,17 @@
         }
         
         function updateWave() {
-            gameState.waveTimer -= 1/60; // Decrease by 1/60th of a second
+            gameState.waveTimer -= 1/60;
             
             if (gameState.waveTimer <= 0) {
                 gameState.wave++;
-                gameState.waveTimer = 30;
-                showNotification(`Wave ${gameState.wave} incoming!`, 'info');
+                gameState.waveTimer = CONFIG.WAVE_DURATION;
+                showNotification(`Wave ${gameState.wave} incoming!`, 'warning');
+                
+                if (userSettings.autoPause) {
+                    gameState.paused = true;
+                    showNotification('Auto-paused between waves', 'info');
+                }
             }
         }
         
@@ -780,22 +1562,25 @@
             document.getElementById('enemiesLeft').textContent = gameState.enemies.length;
             document.getElementById('currentWave').textContent = gameState.wave;
             document.getElementById('waveTimer').textContent = `${Math.ceil(gameState.waveTimer)}s`;
+            document.getElementById('speedBtn').textContent = `${gameState.gameSpeed}x Speed`;
             
             // Update wave progress
-            const progress = ((30 - gameState.waveTimer) / 30) * 100;
+            const progress = ((CONFIG.WAVE_DURATION - gameState.waveTimer) / CONFIG.WAVE_DURATION) * 100;
             document.getElementById('waveProgress').style.width = `${progress}%`;
             
             updateTrapButtons();
         }
         
-        function gameLoop() {
+        function gameUpdate() {
             if (!gameState.playing || gameState.paused) return;
             
             gameState.frameCount++;
+            gameState.spawnTimer++;
             
             // Spawn enemies
-            if (gameState.frameCount % (CONFIG.SPAWN_RATE * 60) === 0) {
+            if (gameState.spawnTimer >= CONFIG.SPAWN_INTERVAL * 60) {
                 spawnEnemy();
+                gameState.spawnTimer = 0;
             }
             
             updateEnemies();
@@ -805,41 +1590,71 @@
         }
         
         function startGameLoop() {
-            setInterval(gameLoop, 1000 / 60); // 60 FPS
+            if (gameLoop) clearInterval(gameLoop);
+            gameLoop = setInterval(gameUpdate, 1000 / 60); // 60 FPS
         }
         
         function pauseGame() {
             gameState.paused = !gameState.paused;
             document.getElementById('pauseModal').classList.toggle('hidden', !gameState.paused);
+            
+            if (gameState.paused) {
+                showNotification('Game paused', 'info');
+            } else {
+                showNotification('Game resumed', 'success');
+            }
         }
         
         function gameOver() {
             gameState.playing = false;
+            if (gameLoop) clearInterval(gameLoop);
             
             document.getElementById('finalStats').innerHTML = `
-                <div class="text-lg mb-2">Final Score: <span class="text-primary">${gameState.score}</span></div>
-                <div class="text-lg mb-2">Wave Reached: <span class="text-secondary">${gameState.wave}</span></div>
-                <div class="text-lg">Enemies Killed: <span class="text-accent">${gameState.kills}</span></div>
+                <div class="space-y-2">
+                    <div class="text-xl">Final Score: <span class="text-primary font-bold">${gameState.score.toLocaleString()}</span></div>
+                    <div class="text-lg">Wave Reached: <span class="text-secondary font-bold">${gameState.wave}</span></div>
+                    <div class="text-lg">Enemies Killed: <span class="text-accent font-bold">${gameState.kills}</span></div>
+                </div>
             `;
             
             document.getElementById('gameOverModal').classList.remove('hidden');
             saveGameData();
+            showNotification('Game Over!', 'error');
         }
         
         async function saveGameData() {
-            if (!currentUser || !supabase) return;
+            if (!currentUser) return;
             
-            try {
-                await supabase.from('game_sessions').insert({
-                    user_id: currentUser.id,
-                    final_score: gameState.score,
-                    waves_completed: gameState.wave,
-                    enemies_killed: gameState.kills,
-                    session_duration_seconds: Math.floor(gameState.frameCount / 60)
-                });
-            } catch (error) {
-                console.error('Error saving game data:', error);
+            if (supabase && currentUser.id !== 'guest') {
+                try {
+                    await supabase.from('game_sessions').insert({
+                        user_id: currentUser.id,
+                        final_score: gameState.score,
+                        waves_completed: gameState.wave,
+                        enemies_killed: gameState.kills,
+                        session_duration_seconds: Math.floor(gameState.frameCount / 60),
+                        is_victory: gameState.lives > 0
+                    });
+                } catch (error) {
+                    console.error('Error saving game data:', error);
+                }
+            } else {
+                // Save to localStorage for guests/demo
+                const currentStats = JSON.parse(localStorage.getItem(`userStats_${currentUser.id}`) || '{}');
+                const newStats = {
+                    highScore: Math.max(currentStats.highScore || 0, gameState.score),
+                    maxWave: Math.max(currentStats.maxWave || 0, gameState.wave),
+                    totalKills: (currentStats.totalKills || 0) + gameState.kills,
+                    gamesPlayed: (currentStats.gamesPlayed || 0) + 1
+                };
+                localStorage.setItem(`userStats_${currentUser.id}`, JSON.stringify(newStats));
             }
+        }
+        
+        function clearCanvas() {
+            const canvas = document.getElementById('gameCanvas');
+            const entities = canvas.querySelectorAll('.enemy, .trap');
+            entities.forEach(entity => entity.remove());
         }
         
         // ============================================
@@ -850,13 +1665,17 @@
             const canvas = document.getElementById('gameCanvas');
             
             canvas.addEventListener('click', (e) => {
-                if (!gameState.selectedTrap) return;
+                if (!gameState.playing || gameState.paused) return;
                 
                 const rect = canvas.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 
-                buildTrap(x, y);
+                if (gameState.sellMode) {
+                    sellTrapAt(x, y);
+                } else if (gameState.selectedTrap) {
+                    buildTrap(x, y);
+                }
             });
         }
         
@@ -899,35 +1718,67 @@
                 height: 40px;
                 background: ${trapType.color};
                 z-index: 5;
+                cursor: pointer;
+                border: 2px solid rgba(255,255,255,0.3);
             `;
-            element.textContent = trapType.icon;
+            
+            // Use sprite or fallback
+            if (userSettings.graphicsQuality !== 'low') {
+                element.innerHTML = `<img src="${trapType.sprite}" alt="${trapType.fallback}" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=&quot;w-full h-full flex items-center justify-center text-xl&quot;>${trapType.fallback}</div>'">`;
+            } else {
+                element.textContent = trapType.fallback;
+            }
+            
+            // Show range if enabled
+            if (userSettings.showTrapRanges) {
+                element.addEventListener('mouseenter', () => showTrapRange(trap));
+                element.addEventListener('mouseleave', hideTrapRange);
+            }
             
             canvas.appendChild(element);
         }
         
-        // ============================================
-        // NOTIFICATIONS
-        // ============================================
+        function showTrapRange(trap) {
+            const canvas = document.getElementById('gameCanvas');
+            const rangeCircle = document.createElement('div');
+            rangeCircle.id = 'trapRange';
+            rangeCircle.style.cssText = `
+                position: absolute;
+                left: ${trap.x - trap.range}px;
+                top: ${trap.y - trap.range}px;
+                width: ${trap.range * 2}px;
+                height: ${trap.range * 2}px;
+                border: 2px solid rgba(124, 58, 237, 0.5);
+                border-radius: 50%;
+                z-index: 1;
+                pointer-events: none;
+            `;
+            canvas.appendChild(rangeCircle);
+        }
         
-        function showNotification(message, type = 'info') {
-            const container = document.getElementById('notifications');
-            const notification = document.createElement('div');
+        function hideTrapRange() {
+            const rangeCircle = document.getElementById('trapRange');
+            rangeCircle?.remove();
+        }
+        
+        function sellTrapAt(x, y) {
+            const clickedTrap = gameState.traps.find(trap => {
+                const distance = Math.sqrt(Math.pow(x - trap.x, 2) + Math.pow(y - trap.y, 2));
+                return distance <= 25;
+            });
             
-            const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                warning: 'bg-yellow-500',
-                info: 'bg-blue-500'
-            };
-            
-            notification.className = `notification ${colors[type]} text-white px-4 py-2 rounded-lg shadow-lg`;
-            notification.textContent = message;
-            
-            container.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+            if (clickedTrap) {
+                const trapType = TRAP_TYPES[clickedTrap.type];
+                const sellPrice = Math.floor(trapType.cost * 0.7);
+                
+                gameState.pizzaBucks += sellPrice;
+                gameState.traps = gameState.traps.filter(t => t.id !== clickedTrap.id);
+                
+                const element = document.getElementById(`trap_${clickedTrap.id}`);
+                element?.remove();
+                
+                showNotification(`Sold ${trapType.name} for $${sellPrice}!`, 'success');
+            }
         }
         
         // ============================================
@@ -954,16 +1805,32 @@
             
             // Menu events
             document.getElementById('startGameBtn').addEventListener('click', initGame);
+            document.getElementById('leaderboardBtn').addEventListener('click', () => {
+                showScreen('leaderboardScreen');
+                loadLeaderboard('score');
+            });
+            document.getElementById('profileBtn').addEventListener('click', () => {
+                showScreen('profileScreen');
+                loadProfile();
+            });
+            document.getElementById('settingsBtn').addEventListener('click', () => {
+                showScreen('settingsScreen');
+            });
+            
+            // Back buttons
             document.getElementById('backToMenuBtn').addEventListener('click', () => {
                 gameState.playing = false;
+                if (gameLoop) clearInterval(gameLoop);
                 showMainMenu();
             });
+            document.getElementById('backFromLeaderboardBtn').addEventListener('click', () => showMainMenu());
+            document.getElementById('backFromProfileBtn').addEventListener('click', () => showMainMenu());
+            document.getElementById('backFromSettingsBtn').addEventListener('click', () => showMainMenu());
             
             // Game events
             document.getElementById('pauseGameBtn').addEventListener('click', pauseGame);
             document.getElementById('speedBtn').addEventListener('click', () => {
                 gameState.gameSpeed = gameState.gameSpeed >= 4 ? 1 : gameState.gameSpeed + 1;
-                document.getElementById('speedBtn').textContent = `${gameState.gameSpeed}x`;
             });
             
             // Modal events
@@ -975,6 +1842,7 @@
             document.getElementById('quitBtn').addEventListener('click', () => {
                 document.getElementById('pauseModal').classList.add('hidden');
                 gameState.playing = false;
+                if (gameLoop) clearInterval(gameLoop);
                 showMainMenu();
             });
             document.getElementById('playAgainBtn').addEventListener('click', () => {
@@ -986,58 +1854,74 @@
                 showMainMenu();
             });
             
-            // Sell mode
+            // Sell mode and clear all
             document.getElementById('sellModeBtn').addEventListener('click', () => {
                 gameState.sellMode = !gameState.sellMode;
                 gameState.selectedTrap = null;
                 const btn = document.getElementById('sellModeBtn');
                 btn.textContent = gameState.sellMode ? '🔨 Build Mode' : '💰 Sell Mode';
                 btn.className = gameState.sellMode ? 
-                    'w-full bg-yellow-500/20 hover:bg-yellow-500/30 py-2 rounded-lg transition-colors' :
-                    'w-full bg-red-500/20 hover:bg-red-500/30 py-2 rounded-lg transition-colors';
+                    'w-full bg-yellow-500/20 hover:bg-yellow-500/30 py-3 rounded-lg transition-colors font-semibold' :
+                    'w-full bg-red-500/20 hover:bg-red-500/30 py-3 rounded-lg transition-colors font-semibold';
                 updateTrapButtons();
+                showNotification(gameState.sellMode ? 'Sell mode activated - click traps to sell' : 'Build mode activated', 'info');
             });
             
-            // Enter key for forms
+            document.getElementById('clearAllBtn').addEventListener('click', () => {
+                if (gameState.traps.length === 0) {
+                    showNotification('No traps to clear!', 'warning');
+                    return;
+                }
+                
+                const totalRefund = gameState.traps.reduce((sum, trap) => {
+                    return sum + Math.floor(TRAP_TYPES[trap.type].cost * 0.7);
+                }, 0);
+                
+                gameState.pizzaBucks += totalRefund;
+                gameState.traps = [];
+                
+                const canvas = document.getElementById('gameCanvas');
+                canvas.querySelectorAll('.trap').forEach(trap => trap.remove());
+                
+                showNotification(`Cleared all traps! Refunded $${totalRefund}`, 'success');
+            });
+            
+            // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
-                    const activeForm = document.querySelector('#authScreen .glass div:not(.hidden)');
-                    if (activeForm) {
-                        if (activeForm.id === 'loginForm') {
+                    const activeScreen = document.querySelector('.screen.active');
+                    if (activeScreen && activeScreen.id === 'authScreen') {
+                        const visibleForm = document.querySelector('#authScreen .glass div:not(.hidden)');
+                        if (visibleForm?.id === 'loginForm') {
                             handleLogin();
-                        } else if (activeForm.id === 'signupForm') {
+                        } else if (visibleForm?.id === 'signupForm') {
                             handleSignup();
                         }
                     }
                 }
+                
+                if (e.key === ' ' && gameState.playing) {
+                    e.preventDefault();
+                    pauseGame();
+                }
             });
+            
+            // Setup specific module events
+            setupLeaderboardEvents();
+            setupSettingsEvents();
         }
         
         // ============================================
         // INITIALIZATION
         // ============================================
         
-        function initDarkMode() {
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.classList.add('dark');
-            }
-            
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-                if (event.matches) {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            });
-        }
-        
-        // Initialize everything when page loads
         document.addEventListener('DOMContentLoaded', () => {
-            initDarkMode();
+            loadSettings();
             setupEventListeners();
             setupCanvasEvents();
+            showScreen('authScreen');
             
-            // Auto-login check
+            // Auto-login check for Supabase
             if (supabase) {
                 supabase.auth.getSession().then(({ data: { session } }) => {
                     if (session) {
