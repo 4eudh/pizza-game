@@ -4892,33 +4892,46 @@
                 return;
             }
             
-            if (supabase) {
-                try {
-                    const { data, error } = await supabase.auth.signUp({ 
-                        email, 
-                        password,
-                        options: { data: { username } }
-                    });
-                    if (error) throw error;
-                    
-                    currentUser = data.user;
-                    loadPlayerProgress();
-                    showNotification('✅ Commander registered successfully!', 'success');
-                    showMainMenu();
-                } catch (error) {
-                    showNotification('❌ Registration failed: ' + error.message, 'error');
-                }
-            } else {
-                currentUser = { 
-                    id: 'user_' + Date.now(), 
-                    email: email, 
-                    user_metadata: { username: username } 
-                };
-                loadPlayerProgress();
-                showNotification('✅ Demo account created!', 'success');
-                showMainMenu();
+if (supabase) {
+    try {
+        const { data, error } = await supabase.auth.signUp({ 
+            email, 
+            password,
+            options: { 
+                data: { 
+                    username: username || `player_${Date.now()}`,
+                    display_name: username || 'Vampire Pizza Commander'
+                } 
             }
+        });
+        
+        if (error) {
+            console.error('Signup Error:', error);
+            showNotification(`❌ Registration failed: ${error.message}`, 'error');
+            return;
         }
+        
+        if (data.user) {
+            currentUser = data.user;
+            loadPlayerProgress();
+            showNotification('✅ Commander registered successfully!', 'success');
+            showMainMenu();
+        }
+    } catch (error) {
+        console.error('Unexpected signup error:', error);
+        showNotification(`❌ Registration failed: ${error.message}`, 'error');
+    }
+} else {
+    // Existing demo account creation logic
+    currentUser = { 
+        id: 'user_' + Date.now(), 
+        email: email, 
+        user_metadata: { username: username } 
+    };
+    loadPlayerProgress();
+    showNotification('✅ Demo account created!', 'success');
+    showMainMenu();
+}
         
         function playAsGuest() {
             currentUser = { 
