@@ -263,7 +263,7 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: clamp(120px, 15vw, 180px);
+            width: clamp(100px, 12vw, 150px);
             height: 100%;
             background: 
                 linear-gradient(90deg, 
@@ -721,20 +721,31 @@
         }
         
         /* Responsive Design Improvements */
-        @media (max-width: 1024px) {
+        @media (max-width: 1536px) {
+            .game-canvas {
+                height: 500px !important;
+            }
+        }
+        
+        @media (max-width: 1280px) {
             .game-canvas {
                 height: 450px !important;
-                margin: 0 auto;
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .game-canvas {
+                height: 400px !important;
             }
             
             .game-path {
-                width: clamp(100px, 12vw, 140px);
+                width: clamp(80px, 10vw, 120px);
             }
         }
         
         @media (max-width: 768px) {
             .game-canvas {
-                height: 400px !important;
+                height: 350px !important;
                 border-radius: 12px;
             }
             
@@ -766,12 +777,12 @@
         
         @media (max-width: 640px) {
             .game-canvas {
-                height: 350px !important;
+                height: 300px !important;
                 border-radius: 8px;
             }
             
             .game-path {
-                width: clamp(80px, 10vw, 120px);
+                width: clamp(70px, 8vw, 100px);
             }
             
             .trap-btn {
@@ -786,7 +797,7 @@
         
         @media (max-width: 475px) {
             .game-canvas {
-                height: 300px !important;
+                height: 280px !important;
             }
             
             .entity {
@@ -795,6 +806,39 @@
             
             .trap-btn {
                 min-height: 60px;
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Enhanced Game Screen Layout */
+        .game-screen-container {
+            max-width: 100vw;
+            overflow: hidden;
+        }
+        
+        .game-main-area {
+            position: relative;
+            width: 100%;
+        }
+        
+        .game-ui-overlay {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 30;
+            width: clamp(280px, 25vw, 350px);
+            max-height: calc(100vh - 2rem);
+            overflow-y: auto;
+        }
+        
+        @media (max-width: 1024px) {
+            .game-ui-overlay {
+                position: relative;
+                top: auto;
+                right: auto;
+                width: 100%;
+                max-height: none;
+                margin-top: 1rem;
             }
         }
         
@@ -985,22 +1029,22 @@
                             👤
                         </div>
                         <div class="text-left">
-                            <div class="text-2xl font-bold text-cyan-300" id="playerLevel">Level 1 Recruit</div>
-                            <div class="text-gray-400" id="playerXP">0 / 100 XP</div>
-                            <div class="text-sm text-purple-400" id="playerRank">Combat Rating: Novice</div>
+                            <div class="text-2xl font-bold text-cyan-300" id="playerRankDisplay">Rank: Recruit</div>
+                            <div class="text-gray-400" id="profileXPDisplay">Total XP: 0</div>
+                            <div class="text-sm text-purple-400" id="gamesPlayedDisplay">Missions: 0</div>
                         </div>
                     </div>
                     
                     <div class="flex-1 max-w-md">
                         <div class="w-full bg-gray-700/50 rounded-full h-4 overflow-hidden mb-2">
-                            <div id="xpProgress" class="level-progress" style="width: 0%"></div>
+                            <div id="rankProgress" class="level-progress" style="width: 0%"></div>
                         </div>
-                        <div class="text-sm text-gray-400 text-center">Next Unlock: Advanced Traps</div>
+                        <div class="text-sm text-gray-400 text-center">Progress to Next Rank</div>
                     </div>
                     
                     <div class="text-center">
                         <div class="text-2xl font-bold text-yellow-400" id="totalScore">0</div>
-                        <div class="text-sm text-gray-400">Total Score</div>
+                        <div class="text-sm text-gray-400">Best Score</div>
                     </div>
                 </div>
             </div>
@@ -1117,10 +1161,9 @@
     </div>
     
     <!-- Enhanced Game Screen -->
-    <div id="gameScreen" class="screen flex-col p-2 md:p-4 min-h-screen">
-        <div class="flex flex-col xl:flex-row gap-4 h-full max-w-7xl mx-auto w-full">
-            <!-- Enhanced Main Game Area -->
-            <div class="flex-1 min-w-0">
+    <div id="gameScreen" class="screen flex-col min-h-screen game-screen-container">
+        <div class="flex-1 p-2 md:p-4">
+            <div class="game-main-area">
                 <!-- Enhanced Control Bar -->
                 <div class="glass-strong rounded-xl p-3 md:p-4 mb-4 flex flex-wrap items-center justify-between gap-2">
                     <button id="backToMenuBtn" class="btn-primary px-4 py-2 rounded-lg text-sm md:text-base">← HQ</button>
@@ -1139,7 +1182,7 @@
                 
                 <!-- Enhanced Stats Bar -->
                 <div class="glass rounded-xl p-3 md:p-4 mb-4">
-                    <div class="grid grid-cols-3 md:grid-cols-7 gap-2 md:gap-3">
+                    <div class="grid grid-cols-4 md:grid-cols-8 gap-2 md:gap-3">
                         <div class="stat-card rounded-lg p-2 md:p-3 text-center">
                             <div class="text-lg md:text-2xl font-bold text-yellow-400" id="pizzaBucks">100</div>
                             <div class="text-xs text-gray-400">Credits</div>
@@ -1152,7 +1195,7 @@
                             <div class="text-lg md:text-2xl font-bold text-green-400" id="kills">0</div>
                             <div class="text-xs text-gray-400">KIA</div>
                         </div>
-                        <div class="stat-card rounded-lg p-2 md:p-3 text-center md:block hidden">
+                        <div class="stat-card rounded-lg p-2 md:p-3 text-center">
                             <div class="text-lg md:text-2xl font-bold text-purple-400" id="score">0</div>
                             <div class="text-xs text-gray-400">Score</div>
                         </div>
@@ -1168,107 +1211,115 @@
                             <div class="text-lg md:text-2xl font-bold text-pink-400" id="sessionXP">0</div>
                             <div class="text-xs text-gray-400">XP</div>
                         </div>
+                        <div class="stat-card rounded-lg p-2 md:p-3 text-center md:block hidden">
+                            <div class="text-lg md:text-2xl font-bold text-cyan-400" id="gameLevel">1</div>
+                            <div class="text-xs text-gray-400">Level</div>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Enhanced Game Canvas -->
-                <div id="gameCanvas" class="game-canvas gpu-accelerated" style="height: 500px;">
-                    <!-- Enhanced Path -->
-                    <div class="game-path"></div>
+                <!-- Enhanced Game Canvas with Integrated UI -->
+                <div class="relative">
+                    <div id="gameCanvas" class="game-canvas gpu-accelerated w-full">
+                        <!-- Enhanced Path -->
+                        <div class="game-path"></div>
+                        
+                        <!-- FPS Counter -->
+                        <div id="fpsCounter" class="absolute top-2 right-2 text-xs text-gray-400 bg-black/50 px-2 py-1 rounded hidden">
+                            FPS: <span id="fpsValue">60</span>
+                        </div>
+                    </div>
                     
-                    <!-- FPS Counter -->
-                    <div id="fpsCounter" class="absolute top-2 right-2 text-xs text-gray-400 bg-black/50 px-2 py-1 rounded hidden">
-                        FPS: <span id="fpsValue">60</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Enhanced Control Panel -->
-            <div class="w-full xl:w-96 space-y-4">
-                <!-- Enhanced Defense Arsenal -->
-                <div class="glass rounded-xl p-4">
-                    <h3 class="text-lg md:text-xl font-bold mb-4 text-center text-primary flex items-center justify-center">
-                        <span class="mr-2">🛡️</span> Defense Arsenal
-                    </h3>
-                    <div class="grid grid-cols-2 gap-3" id="trapShop">
-                        <!-- Enhanced trap buttons will be populated here -->
-                    </div>
-                </div>
-                
-                <!-- Enhanced Wave Intel -->
-                <div class="glass rounded-xl p-4">
-                    <h3 class="text-lg md:text-xl font-bold mb-4 text-center text-blue-400 flex items-center justify-center">
-                        <span class="mr-2">📊</span> Wave Intel
-                    </h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between text-sm">
-                            <span>Next Wave:</span>
-                            <span id="waveTimer" class="text-blue-400 font-bold">30s</span>
+                    <!-- Integrated UI Overlay -->
+                    <div class="game-ui-overlay">
+                        <div class="space-y-4">
+                            <!-- Enhanced Defense Arsenal -->
+                            <div class="glass rounded-xl p-4">
+                                <h3 class="text-lg md:text-xl font-bold mb-4 text-center text-primary flex items-center justify-center">
+                                    <span class="mr-2">🛡️</span> Defense Arsenal
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3" id="trapShop">
+                                    <!-- Enhanced trap buttons will be populated here -->
+                                </div>
+                            </div>
+                            
+                            <!-- Enhanced Wave Intel -->
+                            <div class="glass rounded-xl p-4">
+                                <h3 class="text-lg md:text-xl font-bold mb-4 text-center text-blue-400 flex items-center justify-center">
+                                    <span class="mr-2">📊</span> Wave Intel
+                                </h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between text-sm">
+                                        <span>Next Wave:</span>
+                                        <span id="waveTimer" class="text-blue-400 font-bold">30s</span>
+                                    </div>
+                                    <div class="w-full bg-gray-700/50 rounded-full h-4 overflow-hidden">
+                                        <div id="waveProgress" class="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 h-4 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                                    </div>
+                                    <div class="text-xs text-gray-400 text-center" id="waveInfo">Preparing defenses...</div>
+                                    <div class="text-xs text-center p-2 bg-red-500/20 rounded" id="threatLevel">
+                                        Threat Level: <span class="text-red-400 font-bold">LOW</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Enhanced Power Systems -->
+                            <div class="glass rounded-xl p-4">
+                                <h3 class="text-lg md:text-xl font-bold mb-4 text-center text-green-400 flex items-center justify-center">
+                                    <span class="mr-2">⚡</span> Power Systems
+                                </h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-3" id="powerupShop">
+                                    <button class="bg-red-500/20 hover:bg-red-500/30 py-3 px-2 rounded-lg transition-colors font-semibold text-sm" id="airstrikeBtn">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <span>💥</span><span>Orbital Strike</span>
+                                        </div>
+                                        <div class="text-xs text-yellow-400">$75</div>
+                                    </button>
+                                    <button class="bg-blue-500/20 hover:bg-blue-500/30 py-3 px-2 rounded-lg transition-colors font-semibold text-sm" id="freezeBtn">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <span>❄️</span><span>Cryo Blast</span>
+                                        </div>
+                                        <div class="text-xs text-yellow-400">$50</div>
+                                    </button>
+                                    <button class="bg-yellow-500/20 hover:bg-yellow-500/30 py-3 px-2 rounded-lg transition-colors font-semibold text-sm" id="repairBtn">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <span>🔧</span><span>Nano Repair</span>
+                                        </div>
+                                        <div class="text-xs text-yellow-400">$60</div>
+                                    </button>
+                                    <button class="bg-purple-500/20 hover:bg-purple-500/30 py-3 px-2 rounded-lg transition-colors font-semibold text-sm" id="boostBtn">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <span>🚀</span><span>Overcharge</span>
+                                        </div>
+                                        <div class="text-xs text-yellow-400">$45</div>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Enhanced Command Actions -->
+                            <div class="glass rounded-xl p-4">
+                                <h3 class="text-lg md:text-xl font-bold mb-4 text-center text-orange-400 flex items-center justify-center">
+                                    <span class="mr-2">🎯</span> Commands
+                                </h3>
+                                <div class="space-y-3">
+                                    <button id="sellModeBtn" class="w-full bg-red-500/20 hover:bg-red-500/30 py-3 rounded-lg transition-colors font-semibold text-sm">
+                                        <span class="flex items-center justify-center space-x-2">
+                                            <span>💰</span><span>Salvage Mode</span>
+                                        </span>
+                                    </button>
+                                    <button id="upgradeMode" class="w-full bg-green-500/20 hover:bg-green-500/30 py-3 rounded-lg transition-colors font-semibold text-sm">
+                                        <span class="flex items-center justify-center space-x-2">
+                                            <span>⬆️</span><span>Upgrade Mode</span>
+                                        </span>
+                                    </button>
+                                    <button id="clearAllBtn" class="w-full bg-orange-500/20 hover:bg-orange-500/30 py-3 rounded-lg transition-colors font-semibold text-sm">
+                                        <span class="flex items-center justify-center space-x-2">
+                                            <span>🗑️</span><span>Emergency Clear</span>
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="w-full bg-gray-700/50 rounded-full h-4 overflow-hidden">
-                            <div id="waveProgress" class="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 h-4 rounded-full transition-all duration-1000" style="width: 0%"></div>
-                        </div>
-                        <div class="text-xs text-gray-400 text-center" id="waveInfo">Preparing defenses...</div>
-                        <div class="text-xs text-center p-2 bg-red-500/20 rounded" id="threatLevel">
-                            Threat Level: <span class="text-red-400 font-bold">LOW</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Enhanced Power Systems -->
-                <div class="glass rounded-xl p-4">
-                    <h3 class="text-lg md:text-xl font-bold mb-4 text-center text-green-400 flex items-center justify-center">
-                        <span class="mr-2">⚡</span> Power Systems
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-3" id="powerupShop">
-                        <button class="bg-red-500/20 hover:bg-red-500/30 py-3 px-2 rounded-lg transition-colors font-semibold text-sm" id="airstrikeBtn">
-                            <div class="flex items-center justify-center space-x-2">
-                                <span>💥</span><span>Orbital Strike</span>
-                            </div>
-                            <div class="text-xs text-yellow-400">$75</div>
-                        </button>
-                        <button class="bg-blue-500/20 hover:bg-blue-500/30 py-3 px-2 rounded-lg transition-colors font-semibold text-sm" id="freezeBtn">
-                            <div class="flex items-center justify-center space-x-2">
-                                <span>❄️</span><span>Cryo Blast</span>
-                            </div>
-                            <div class="text-xs text-yellow-400">$50</div>
-                        </button>
-                        <button class="bg-yellow-500/20 hover:bg-yellow-500/30 py-3 px-2 rounded-lg transition-colors font-semibold text-sm" id="repairBtn">
-                            <div class="flex items-center justify-center space-x-2">
-                                <span>🔧</span><span>Nano Repair</span>
-                            </div>
-                            <div class="text-xs text-yellow-400">$60</div>
-                        </button>
-                        <button class="bg-purple-500/20 hover:bg-purple-500/30 py-3 px-2 rounded-lg transition-colors font-semibold text-sm" id="boostBtn">
-                            <div class="flex items-center justify-center space-x-2">
-                                <span>🚀</span><span>Overcharge</span>
-                            </div>
-                            <div class="text-xs text-yellow-400">$45</div>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Enhanced Command Actions -->
-                <div class="glass rounded-xl p-4">
-                    <h3 class="text-lg md:text-xl font-bold mb-4 text-center text-orange-400 flex items-center justify-center">
-                        <span class="mr-2">🎯</span> Commands
-                    </h3>
-                    <div class="space-y-3">
-                        <button id="sellModeBtn" class="w-full bg-red-500/20 hover:bg-red-500/30 py-3 rounded-lg transition-colors font-semibold text-sm">
-                            <span class="flex items-center justify-center space-x-2">
-                                <span>💰</span><span>Salvage Mode</span>
-                            </span>
-                        </button>
-                        <button id="upgradeMode" class="w-full bg-green-500/20 hover:bg-green-500/30 py-3 rounded-lg transition-colors font-semibold text-sm">
-                            <span class="flex items-center justify-center space-x-2">
-                                <span>⬆️</span><span>Upgrade Mode</span>
-                            </span>
-                        </button>
-                        <button id="clearAllBtn" class="w-full bg-orange-500/20 hover:bg-orange-500/30 py-3 rounded-lg transition-colors font-semibold text-sm">
-                            <span class="flex items-center justify-center space-x-2">
-                                <span>🗑️</span><span>Emergency Clear</span>
-                            </span>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -1361,12 +1412,12 @@
                         
                         <div class="space-y-3 text-center">
                             <div class="p-3 bg-blue-500/20 rounded-lg">
-                                <div class="text-lg font-bold text-blue-300" id="profileLevel">Level 1</div>
-                                <div class="text-sm text-gray-400">Current Level</div>
+                                <div class="text-lg font-bold text-blue-300" id="profileRank">Recruit</div>
+                                <div class="text-sm text-gray-400">Current Rank</div>
                             </div>
                             <div class="rank-display p-3 rounded-lg">
-                                <div class="text-lg font-bold text-purple-300" id="profileRank">Recruit</div>
-                                <div class="text-sm text-gray-400">Combat Rank</div>
+                                <div class="text-lg font-bold text-purple-300" id="profileTotalXP">0 XP</div>
+                                <div class="text-sm text-gray-400">Total Experience</div>
                             </div>
                             <div class="p-3 bg-green-500/20 rounded-lg">
                                 <div class="text-lg font-bold text-green-300" id="profileJoinDate">--</div>
@@ -1701,9 +1752,9 @@
         <div class="glass-strong rounded-2xl p-8 max-w-md w-full mx-4 animate-bounce-in">
             <div class="text-center mb-6">
                 <div class="text-6xl mb-4 animate-bounce">🎉</div>
-                <h2 class="text-3xl font-bold game-title mb-2">Promotion!</h2>
-                <div class="text-2xl font-bold text-cyan-300" id="newLevel">Level 2</div>
-                <div class="text-lg text-gray-400" id="newRank">Soldier</div>
+                <h2 class="text-3xl font-bold game-title mb-2">Rank Promotion!</h2>
+                <div class="text-2xl font-bold text-cyan-300" id="newRank">Corporal</div>
+                <div class="text-lg text-gray-400" id="newRankLevel">Rank 3</div>
             </div>
             <div class="p-4 bg-blue-500/20 rounded-lg mb-6">
                 <div class="font-bold text-blue-300 mb-2 text-center">🔓 New Unlocks:</div>
@@ -1746,8 +1797,8 @@
         // ENHANCED SUPABASE CONFIGURATION
         // ============================================
         
-        const SUPABASE_URL = 'https://tzbgavzhciqclgmcmoqw.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6YmdhdnpoY2lxY2xnbWNtb3F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNzMwNzYsImV4cCI6MjA2ODc0OTA3Nn0.gwjUMYjSLtiI5u5sBTZpg1S9OqVBhKvTZWttuOYPiek';
+        const SUPABASE_URL = 'https://hzxnlefcylcbtictpavl.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6eG5sZWZjeWxjYnRpY3RwYXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNTgyNjIsImV4cCI6MjA2ODkzNDI2Mn0.CH3VfQWfKTIvXomuiUad6zOMDAaR294yDZkNoLEHBNE';
         
         let supabase = null;
         try {
@@ -1759,17 +1810,22 @@
         }
         
         // ============================================
-        // ENHANCED GLOBAL STATE
+        // ENHANCED GLOBAL STATE - CLEAR LEVEL/RANK DISTINCTION
         // ============================================
         
         let currentUser = null;
         let gameLoop = null;
         let selectedGameMode = 'classic';
         let selectedDifficulty = 'beginner';
-        let playerLevel = 1;
-        let playerXP = 0;
-        let sessionXP = 0;
-        let totalScore = 0;
+        
+        // CLEAR DISTINCTION: Game vs Profile levels
+        let currentGameLevel = 1;        // Level within current game session (resets each game, 1-30)
+        let gameSessionXP = 0;           // XP earned in current game session
+        
+        let playerProfileRank = 1;       // Overall player rank (persists across games, 1-30)
+        let totalProfileXP = 0;          // Total XP accumulated across all games
+        let highScore = 0;               // Best score across all games
+        
         let fpsCounter = 0;
         let lastTime = 0;
         
@@ -1813,7 +1869,6 @@
             lastKillTime: 0,
             gameMode: 'classic',
             difficulty: 'beginner',
-            sessionXP: 0,
             threatLevel: 'LOW',
             specialEvents: []
         };
@@ -1866,7 +1921,10 @@
             },
             COMBO_TIMEOUT: 3000,
             POWERUP_SPAWN_CHANCE: 0.15,
-            LEVEL_XP_REQUIREMENTS: [0, 100, 250, 500, 800, 1200, 1700, 2300, 3000, 3800, 4700, 5700, 6800, 8000, 9300, 10700, 12200, 13800, 15500, 17300, 20000, 25000, 30000, 35000, 45000, 60000, 80000, 100000, 150000, 250000],
+            // XP requirements for each game level (within a single game)
+            GAME_LEVEL_XP_REQUIREMENTS: [0, 100, 220, 360, 520, 700, 900, 1120, 1360, 1620, 1900, 2200, 2520, 2860, 3220, 3600, 4000, 4420, 4860, 5320, 5800, 6300, 6820, 7360, 7920, 8500, 9100, 9720, 10360, 11020],
+            // XP requirements for profile ranks (across all games)
+            PROFILE_RANK_XP_REQUIREMENTS: [0, 500, 1200, 2100, 3200, 4500, 6000, 7700, 9600, 11700, 14000, 16500, 19200, 22100, 25200, 28500, 32000, 35700, 39600, 43700, 48000, 52500, 57200, 62100, 67200, 72500, 78000, 83700, 89600, 95700],
             CANVAS_SIZES: {
                 desktop: { width: '100%', height: '500px' },
                 tablet: { width: '100%', height: '450px' },
@@ -1934,7 +1992,7 @@
                 reward: 40,
                 scoreValue: 30,
                 color: '#4B0082',
-                asset: 'shadow_pizza.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/mushroom-scared.png',
                 abilities: ['invisibility', 'phase'],
                 rarity: 'uncommon',
                 spawnWeight: 45,
@@ -1950,7 +2008,7 @@
                 reward: 50,
                 scoreValue: 40,
                 color: '#708090',
-                asset: 'armored_pizza.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/monsterfood-frank.png',
                 abilities: ['armor', 'reflect'],
                 rarity: 'rare',
                 spawnWeight: 30,
@@ -1966,7 +2024,7 @@
                 reward: 45,
                 scoreValue: 35,
                 color: '#87CEEB',
-                asset: 'flying_pizza.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/moth.png',
                 abilities: ['flying', 'swoop'],
                 rarity: 'rare',
                 spawnWeight: 25,
@@ -1982,7 +2040,7 @@
                 reward: 65,
                 scoreValue: 50,
                 color: '#FF4500',
-                asset: 'inferno_pizza.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/monsterfood-were.png',
                 abilities: ['fire_aura', 'burn_trail'],
                 rarity: 'epic',
                 spawnWeight: 20,
@@ -1998,7 +2056,7 @@
                 reward: 60,
                 scoreValue: 45,
                 color: '#00BFFF',
-                asset: 'frost_pizza.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/gem1blue.png',
                 abilities: ['freeze_aura', 'ice_armor'],
                 rarity: 'epic',
                 spawnWeight: 18,
@@ -2014,7 +2072,7 @@
                 reward: 80,
                 scoreValue: 60,
                 color: '#FFD700',
-                asset: 'lightning_pizza.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/lightingbolt.png',
                 abilities: ['lightning_speed', 'shock'],
                 rarity: 'legendary',
                 spawnWeight: 12,
@@ -2030,7 +2088,7 @@
                 reward: 120,
                 scoreValue: 100,
                 color: '#800080',
-                asset: 'void_pizza.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/wormhole.png',
                 abilities: ['void_walk', 'absorb_energy'],
                 rarity: 'legendary',
                 spawnWeight: 8,
@@ -2046,7 +2104,7 @@
                 reward: 300,
                 scoreValue: 1000,
                 color: '#228B22',
-                asset: 'cthulhu_boss.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/cthulhu-pizza.png',
                 abilities: ['boss', 'summon_minions', 'cosmic_rage'],
                 isBoss: true,
                 rarity: 'boss',
@@ -2058,7 +2116,7 @@
         };
         
         // ============================================
-        // ENHANCED TRAP TYPES WITH ASSET PATHS
+        // ENHANCED TRAP TYPES WITH CLEAR LEVEL UNLOCKS
         // ============================================
         
         const TRAP_TYPES = {
@@ -2069,10 +2127,10 @@
                 range: 100,
                 cooldown: 'normal',
                 color: '#FFFACD',
-                asset: 'garlic_cannon.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/garlic.png',
                 abilities: ['poison_shot'],
                 upgrades: ['damage', 'range', 'poison_duration'],
-                requiredLevel: 1,
+                requiredGameLevel: 1,
                 description: 'Basic anti-vampire defense'
             },
             
@@ -2083,10 +2141,10 @@
                 range: 80,
                 cooldown: 'fast',
                 color: '#C0C0C0',
-                asset: 'pizza_cutter.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/pizzacutter.png',
                 abilities: ['slice', 'bleed'],
                 upgrades: ['damage', 'attack_speed', 'bleed_chance'],
-                requiredLevel: 2,
+                requiredGameLevel: 3,
                 description: 'High-speed slicing action'
             },
             
@@ -2097,10 +2155,10 @@
                 range: 120,
                 cooldown: 'normal',
                 color: '#87CEEB',
-                asset: 'holy_water.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/mozzarella.png',
                 abilities: ['area_damage', 'purify'],
                 upgrades: ['damage', 'area_size', 'purify_power'],
-                requiredLevel: 3,
+                requiredGameLevel: 5,
                 description: 'Sanctified area denial'
             },
             
@@ -2111,10 +2169,10 @@
                 range: 90,
                 cooldown: 'normal',
                 color: '#E6E6FA',
-                asset: 'mirror_trap.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/gem3blue.png',
                 abilities: ['reflect_damage', 'dazzle'],
                 upgrades: ['damage', 'reflect_chance', 'dazzle_duration'],
-                requiredLevel: 4,
+                requiredGameLevel: 7,
                 description: 'Redirects enemy attacks'
             },
             
@@ -2125,10 +2183,10 @@
                 range: 110,
                 cooldown: 'normal',
                 color: '#B0E0E6',
-                asset: 'ice_cannon.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/asterisk2.png',
                 abilities: ['freeze', 'slow_aura'],
                 upgrades: ['freeze_duration', 'slow_power', 'range'],
-                requiredLevel: 5,
+                requiredGameLevel: 9,
                 description: 'Freezes enemies solid'
             },
             
@@ -2139,10 +2197,10 @@
                 range: 160,
                 cooldown: 'slow',
                 color: '#8B4513',
-                asset: 'stake_launcher.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/anchovy-cannon.png',
                 abilities: ['piercing', 'critical_strike'],
                 upgrades: ['damage', 'pierce_count', 'critical_chance'],
-                requiredLevel: 6,
+                requiredGameLevel: 12,
                 description: 'High-damage piercing shots'
             },
             
@@ -2153,10 +2211,10 @@
                 range: 70,
                 cooldown: 'slow',
                 color: '#FF4500',
-                asset: 'explosive_mine.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/explosion.png',
                 abilities: ['explosion', 'chain_reaction'],
                 upgrades: ['damage', 'explosion_radius', 'chain_chance'],
-                requiredLevel: 8,
+                requiredGameLevel: 15,
                 description: 'Devastating area explosion'
             },
             
@@ -2167,10 +2225,10 @@
                 range: 200,
                 cooldown: 'slow',
                 color: '#FFD700',
-                asset: 'lightning_rod.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/lightningbolt.png',
                 abilities: ['chain_lightning', 'emp_blast'],
                 upgrades: ['damage', 'chain_count', 'emp_duration'],
-                requiredLevel: 10,
+                requiredGameLevel: 18,
                 description: 'Electrifies multiple targets'
             },
             
@@ -2181,10 +2239,10 @@
                 range: 180,
                 cooldown: 'normal',
                 color: '#FF00FF',
-                asset: 'laser_turret.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/orb2.png',
                 abilities: ['laser_beam', 'armor_piercing'],
                 upgrades: ['damage', 'beam_duration', 'pierce_power'],
-                requiredLevel: 12,
+                requiredGameLevel: 22,
                 description: 'Continuous laser beam'
             },
             
@@ -2195,10 +2253,10 @@
                 range: 150,
                 cooldown: 'slow',
                 color: '#800080',
-                asset: 'void_trap.png',
+                asset: 'https://raw.githubusercontent.com/4eudh/pizza-game/main/orb4.png',
                 abilities: ['void_pull', 'reality_tear'],
                 upgrades: ['damage', 'pull_strength', 'tear_duration'],
-                requiredLevel: 15,
+                requiredGameLevel: 25,
                 description: 'Warps space-time itself'
             }
         };
@@ -2445,19 +2503,20 @@
         };
         
         // ============================================
-        // ENHANCED LEVEL SYSTEM & REWARDS
+        // ENHANCED PROFILE RANK SYSTEM & REWARDS
         // ============================================
         
-        const LEVEL_REWARDS = {
-            2: { traps: ['pizza_cutter'], features: ['Enhanced targeting system'] },
-            3: { traps: ['holy_water'], features: ['Area damage effects'] },
-            4: { traps: ['mirror_trap'], features: ['Reflection mechanics'] },
-            5: { traps: ['ice_cannon'], features: ['Freeze abilities'] },
-            6: { traps: ['stake_launcher'], features: ['Piercing attacks'] },
-            8: { traps: ['explosive_mine'], features: ['Chain reactions'] },
-            10: { traps: ['lightning_rod'], features: ['Chain lightning'] },
-            12: { traps: ['laser_turret'], features: ['Continuous beams'] },
-            15: { traps: ['void_trap'], features: ['Reality manipulation'] }
+        const PROFILE_RANK_REWARDS = {
+            3: { features: ['Advanced targeting system'] },
+            5: { features: ['Enhanced damage indicators'] },
+            8: { features: ['Combo system improvements'] },
+            10: { features: ['Special power abilities'] },
+            12: { features: ['Elite enemy intelligence'] },
+            15: { features: ['Master-tier strategies'] },
+            18: { features: ['Legendary combat protocols'] },
+            20: { features: ['Cosmic defense systems'] },
+            25: { features: ['Ultimate tactical mastery'] },
+            30: { features: ['Legendary Commander Status'] }
         };
         
         // ============================================
@@ -2614,32 +2673,85 @@
             setTimeout(() => effect.remove(), 2000);
         }
         
-        function updatePlayerLevel() {
-            const xpNeeded = CONFIG.LEVEL_XP_REQUIREMENTS[playerLevel] || (playerLevel * 200);
-            const rankInfo = getRankInfo(playerLevel);
+        // ============================================
+        // CLEAR LEVEL/RANK SYSTEM FUNCTIONS
+        // ============================================
+        
+        function updatePlayerDisplays() {
+            // Update profile rank display (persistent across games)
+            const rankInfo = getProfileRankInfo(playerProfileRank);
+            const nextRankXP = CONFIG.PROFILE_RANK_XP_REQUIREMENTS[playerProfileRank] || (playerProfileRank * 1000);
             
-            document.getElementById('playerLevel').textContent = `Level ${playerLevel} ${rankInfo.name}`;
-            document.getElementById('playerXP').textContent = `${playerXP} / ${xpNeeded} XP`;
-            document.getElementById('playerRank').textContent = `Combat Rating: ${rankInfo.name}`;
+            document.getElementById('playerRankDisplay').textContent = `Rank: ${rankInfo.name}`;
+            document.getElementById('profileXPDisplay').textContent = `Total XP: ${totalProfileXP.toLocaleString()}`;
+            document.getElementById('gamesPlayedDisplay').textContent = `Missions: ${getStatValue('gamesPlayed')}`;
+            document.getElementById('totalScore').textContent = highScore.toLocaleString();
             
-            const progress = Math.min((playerXP / xpNeeded) * 100, 100);
-            document.getElementById('xpProgress').style.width = `${progress}%`;
+            // Update progress bar for rank progression
+            const progress = Math.min((totalProfileXP / nextRankXP) * 100, 100);
+            document.getElementById('rankProgress').style.width = `${progress}%`;
             
-            // Update rank display styling
-            const rankDisplays = document.querySelectorAll('.rank-display');
-            rankDisplays.forEach(display => {
-                display.className = `rank-display ${rankInfo.class}`;
-            });
+            // Update game level display (current game session only)
+            if (gameState.playing) {
+                document.getElementById('gameLevel').textContent = currentGameLevel;
+                document.getElementById('sessionXP').textContent = gameSessionXP;
+            }
         }
         
-        function checkLevelUp() {
-            const xpNeeded = CONFIG.LEVEL_XP_REQUIREMENTS[playerLevel] || (playerLevel * 200);
+        function getProfileRankInfo(rank) {
+            const ranks = [
+                { name: 'Recruit', class: '', minRank: 1 },
+                { name: 'Private', class: '', minRank: 2 },
+                { name: 'Corporal', class: '', minRank: 3 },
+                { name: 'Sergeant', class: '', minRank: 4 },
+                { name: 'Lieutenant', class: 'advanced', minRank: 5 },
+                { name: 'Captain', class: 'advanced', minRank: 7 },
+                { name: 'Major', class: 'advanced', minRank: 9 },
+                { name: 'Colonel', class: 'veteran', minRank: 12 },
+                { name: 'General', class: 'veteran', minRank: 15 },
+                { name: 'Marshal', class: 'veteran', minRank: 18 },
+                { name: 'War Chief', class: 'elite', minRank: 20 },
+                { name: 'Battle Master', class: 'elite', minRank: 22 },
+                { name: 'Combat Legend', class: 'elite', minRank: 24 },
+                { name: 'Elite Commander', class: 'elite', minRank: 26 },
+                { name: 'Legendary Guardian', class: 'legendary', minRank: 28 },
+                { name: 'Cosmic Protector', class: 'legendary', minRank: 30 }
+            ];
             
-            if (playerXP >= xpNeeded && playerLevel < 30) {
-                playerXP -= xpNeeded;
-                playerLevel++;
+            for (let i = ranks.length - 1; i >= 0; i--) {
+                if (rank >= ranks[i].minRank) {
+                    return ranks[i];
+                }
+            }
+            return ranks[0];
+        }
+        
+        function checkGameLevelUp() {
+            const xpNeeded = CONFIG.GAME_LEVEL_XP_REQUIREMENTS[currentGameLevel] || (currentGameLevel * 100);
+            
+            if (gameSessionXP >= xpNeeded && currentGameLevel < 30) {
+                gameSessionXP -= xpNeeded;
+                currentGameLevel++;
                 
-                showLevelUpModal();
+                // Show level up notification for game level
+                showNotification(`🎮 Game Level ${currentGameLevel} achieved! New traps unlocked!`, 'levelup');
+                playSound('levelup');
+                
+                // Refresh trap shop with new unlocks
+                setupEnhancedTrapShop();
+                
+                return true;
+            }
+            return false;
+        }
+        
+        function checkProfileRankUp() {
+            const xpNeeded = CONFIG.PROFILE_RANK_XP_REQUIREMENTS[playerProfileRank] || (playerProfileRank * 1000);
+            
+            if (totalProfileXP >= xpNeeded && playerProfileRank < 30) {
+                playerProfileRank++;
+                
+                showRankUpModal();
                 savePlayerProgress();
                 updateLeaderboardData();
                 
@@ -2648,66 +2760,37 @@
             return false;
         }
         
-        function showLevelUpModal() {
+        function showRankUpModal() {
             const modal = document.getElementById('levelUpModal');
-            const rankInfo = getRankInfo(playerLevel);
+            const rankInfo = getProfileRankInfo(playerProfileRank);
             
-            document.getElementById('newLevel').textContent = `Level ${playerLevel}`;
             document.getElementById('newRank').textContent = rankInfo.name;
+            document.getElementById('newRankLevel').textContent = `Rank ${playerProfileRank}`;
             
-            const rewards = LEVEL_REWARDS[playerLevel];
+            const rewards = PROFILE_RANK_REWARDS[playerProfileRank];
             if (rewards) {
                 const featuresHtml = rewards.features?.map(f => `<div class="text-cyan-300">• ${f}</div>`).join('') || '';
-                const trapsHtml = rewards.traps?.map(t => `<div class="text-yellow-300">• ${TRAP_TYPES[t].name}</div>`).join('') || '';
-                
-                document.getElementById('unlockedFeatures').innerHTML = featuresHtml + trapsHtml;
+                document.getElementById('unlockedFeatures').innerHTML = featuresHtml;
             } else {
-                document.getElementById('unlockedFeatures').innerHTML = '<div class="text-green-300">• Increased combat effectiveness</div>';
+                document.getElementById('unlockedFeatures').innerHTML = '<div class="text-green-300">• Enhanced combat effectiveness</div>';
             }
             
             modal.classList.remove('hidden');
-            playSound('levelup');
-            showNotification(`🎉 Promotion achieved! Welcome to Level ${playerLevel}!`, 'levelup', 6000);
+            playSound('achievement');
+            showNotification(`🎉 Rank promotion! Welcome to ${rankInfo.name}!`, 'achievement', 6000);
         }
         
-        function getRankInfo(level) {
-            const ranks = [
-                { name: 'Recruit', class: '', minLevel: 1 },
-                { name: 'Private', class: '', minLevel: 2 },
-                { name: 'Corporal', class: '', minLevel: 3 },
-                { name: 'Sergeant', class: '', minLevel: 4 },
-                { name: 'Lieutenant', class: 'advanced', minLevel: 5 },
-                { name: 'Captain', class: 'advanced', minLevel: 7 },
-                { name: 'Major', class: 'advanced', minLevel: 9 },
-                { name: 'Colonel', class: 'veteran', minLevel: 12 },
-                { name: 'General', class: 'veteran', minLevel: 15 },
-                { name: 'Marshal', class: 'veteran', minLevel: 18 },
-                { name: 'War Chief', class: 'elite', minLevel: 20 },
-                { name: 'Battle Master', class: 'elite', minLevel: 22 },
-                { name: 'Combat Legend', class: 'elite', minLevel: 24 },
-                { name: 'Elite Commander', class: 'elite', minLevel: 26 },
-                { name: 'Legendary Guardian', class: 'legendary', minLevel: 28 },
-                { name: 'Cosmic Protector', class: 'legendary', minLevel: 30 }
-            ];
-            
-            for (let i = ranks.length - 1; i >= 0; i--) {
-                if (level >= ranks[i].minLevel) {
-                    return ranks[i];
-                }
-            }
-            return ranks[0];
-        }
-        
-        function addXP(amount) {
+        function addGameSessionXP(amount) {
             const difficultyMod = CONFIG.DIFFICULTY_MODIFIERS[selectedDifficulty];
             const finalXP = Math.floor(amount * difficultyMod.xpMultiplier);
             
-            playerXP += finalXP;
-            sessionXP += finalXP;
-            gameState.sessionXP = sessionXP;
+            // Add to both game session XP and total profile XP
+            gameSessionXP += finalXP;
+            totalProfileXP += finalXP;
             
-            updatePlayerLevel();
-            checkLevelUp();
+            updatePlayerDisplays();
+            checkGameLevelUp();
+            checkProfileRankUp();
             
             // Show XP gain
             if (userSettings.showDamageNumbers && gameState.playing) {
@@ -2718,25 +2801,34 @@
         }
         
         function savePlayerProgress() {
+            if (!currentUser) return;
+            
             const progress = {
-                level: playerLevel,
-                xp: playerXP,
-                totalScore: totalScore,
+                profileRank: playerProfileRank,
+                totalXP: totalProfileXP,
+                highScore: highScore,
                 lastPlayed: Date.now()
             };
             localStorage.setItem(`playerProgress_${currentUser.id}`, JSON.stringify(progress));
         }
         
         function loadPlayerProgress() {
+            if (!currentUser) return;
+            
             const saved = localStorage.getItem(`playerProgress_${currentUser.id}`);
             if (saved) {
                 const progress = JSON.parse(saved);
-                playerLevel = progress.level || 1;
-                playerXP = progress.xp || 0;
-                totalScore = progress.totalScore || 0;
+                playerProfileRank = progress.profileRank || 1;
+                totalProfileXP = progress.totalXP || 0;
+                highScore = progress.highScore || 0;
             }
-            updatePlayerLevel();
-            document.getElementById('totalScore').textContent = totalScore.toLocaleString();
+            updatePlayerDisplays();
+        }
+        
+        function getStatValue(statName) {
+            if (!currentUser) return 0;
+            const saved = JSON.parse(localStorage.getItem(`userStats_${currentUser.id}`) || '{}');
+            return saved[statName] || 0;
         }
         
         // ============================================
@@ -2745,18 +2837,24 @@
         
         function updateCanvasSize() {
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const container = canvas.parentElement;
             const containerWidth = container.clientWidth;
             
             let height;
-            if (window.innerWidth >= 1024) {
+            if (window.innerWidth >= 1536) {
                 height = 500;
-            } else if (window.innerWidth >= 768) {
+            } else if (window.innerWidth >= 1280) {
                 height = 450;
-            } else if (window.innerWidth >= 640) {
+            } else if (window.innerWidth >= 1024) {
                 height = 400;
-            } else {
+            } else if (window.innerWidth >= 768) {
                 height = 350;
+            } else if (window.innerWidth >= 640) {
+                height = 300;
+            } else {
+                height = 280;
             }
             
             canvas.style.height = `${height}px`;
@@ -2765,14 +2863,14 @@
             // Update path width
             const path = canvas.querySelector('.game-path');
             if (path) {
-                const pathWidth = Math.max(80, Math.min(180, containerWidth * 0.15));
+                const pathWidth = Math.max(70, Math.min(150, containerWidth * 0.12));
                 path.style.width = `${pathWidth}px`;
             }
         }
         
         function handleResize() {
             updateCanvasSize();
-            updateUI();
+            updatePlayerDisplays();
         }
         
         // ============================================
@@ -2781,6 +2879,10 @@
         
         function initGame() {
             const difficultyMod = CONFIG.DIFFICULTY_MODIFIERS[selectedDifficulty];
+            
+            // Reset game level and session XP for new game
+            currentGameLevel = 1;
+            gameSessionXP = 0;
             
             gameState = {
                 playing: true,
@@ -2807,16 +2909,14 @@
                 lastKillTime: 0,
                 gameMode: selectedGameMode,
                 difficulty: selectedDifficulty,
-                sessionXP: 0,
                 threatLevel: 'LOW',
                 specialEvents: []
             };
             
-            sessionXP = 0;
             setupEnhancedTrapShop();
             clearCanvas();
             updateCanvasSize();
-            updateUI();
+            updatePlayerDisplays();
             showScreen('gameScreen');
             startGameLoop();
             
@@ -2839,16 +2939,18 @@
         
         function setupEnhancedTrapShop() {
             const trapShop = document.getElementById('trapShop');
+            if (!trapShop) return;
+            
             trapShop.innerHTML = '';
             
             Object.entries(TRAP_TYPES).forEach(([key, trap]) => {
                 const button = document.createElement('button');
-                const isUnlocked = playerLevel >= trap.requiredLevel;
+                const isUnlocked = currentGameLevel >= trap.requiredGameLevel;
                 
-                button.className = `trap-btn rounded-lg p-3 text-center w-full transition-all duration-300 ${!isUnlocked ? 'opacity-40' : ''}`;
+                button.className = `trap-btn rounded-lg p-3 text-center w-full transition-all duration-300 ${!isUnlocked ? 'disabled' : ''}`;
                 
                 const canAfford = gameState.pizzaBucks >= trap.cost;
-                const costColor = canAfford ? 'text-yellow-400' : 'text-red-400';
+                const costColor = canAfford && isUnlocked ? 'text-yellow-400' : 'text-red-400';
                 
                 button.innerHTML = `
                     <div class="text-2xl mb-2">
@@ -2862,14 +2964,14 @@
                         <div>DMG: ${trap.damage}</div>
                         <div>RNG: ${trap.range}</div>
                     </div>
-                    ${!isUnlocked ? `<div class="text-xs text-red-400 mt-1">Level ${trap.requiredLevel}</div>` : ''}
+                    ${!isUnlocked ? `<div class="text-xs text-red-400 mt-1">Level ${trap.requiredGameLevel}</div>` : ''}
                 `;
                 
                 if (isUnlocked) {
                     button.addEventListener('click', () => selectTrap(key));
                 } else {
                     button.addEventListener('click', () => {
-                        showNotification(`❌ Requires Level ${trap.requiredLevel}!`, 'error');
+                        showNotification(`❌ Requires Game Level ${trap.requiredGameLevel}!`, 'error');
                     });
                 }
                 
@@ -2880,8 +2982,8 @@
         
         function selectTrap(trapType) {
             const trap = TRAP_TYPES[trapType];
-            if (playerLevel < trap.requiredLevel) {
-                showNotification(`❌ Requires Level ${trap.requiredLevel}!`, 'error');
+            if (currentGameLevel < trap.requiredGameLevel) {
+                showNotification(`❌ Requires Game Level ${trap.requiredGameLevel}!`, 'error');
                 return;
             }
             
@@ -2911,7 +3013,7 @@
                     button.classList.add('selected');
                 }
                 
-                if (gameState.pizzaBucks < trap.cost || playerLevel < trap.requiredLevel) {
+                if (gameState.pizzaBucks < trap.cost || currentGameLevel < trap.requiredGameLevel) {
                     button.classList.add('disabled');
                 }
             });
@@ -2999,8 +3101,10 @@
             const speedMultiplier = difficultyMod.enemySpeed * (1 + (gameState.wave * 0.02));
             
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const canvasRect = canvas.getBoundingClientRect();
-            const pathWidth = canvas.querySelector('.game-path').offsetWidth;
+            const pathWidth = canvas.querySelector('.game-path')?.offsetWidth || 100;
             
             const enemy = {
                 id: Date.now() + Math.random(),
@@ -3036,6 +3140,8 @@
         
         function createEnemyElement(enemy) {
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const element = document.createElement('div');
             element.className = `entity enemy gpu-accelerated ${ENEMY_TYPES[enemy.type].isBoss ? 'boss' : ''} ${enemy.rarity}`;
             element.id = `enemy_${enemy.id}`;
@@ -3167,8 +3273,8 @@
             gameState.score += enemy.scoreValue * Math.max(1, gameState.combo);
             gameState.kills++;
             
-            // Add XP
-            addXP(enemy.xpReward);
+            // Add XP to game session
+            addGameSessionXP(enemy.xpReward);
             
             // Enhanced combo system
             if (Date.now() - gameState.lastKillTime < CONFIG.COMBO_TIMEOUT) {
@@ -3212,14 +3318,19 @@
                 spawnEnhancedPowerup(enemy.x, enemy.y, enemy.rarity);
             }
             
-            // Update total score
-            totalScore += enemy.scoreValue;
+            // Update high score
+            if (gameState.score > highScore) {
+                highScore = gameState.score;
+                savePlayerProgress();
+            }
             
             playSound('coin');
         }
         
         function showEnhancedDamageNumber(x, y, amount, type) {
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const damageText = document.createElement('div');
             damageText.className = `damage-number ${type} gpu-accelerated`;
             damageText.style.cssText = `
@@ -3239,6 +3350,7 @@
             if (!userSettings.particleEffects) return;
             
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
             
             // Main explosion
             const explosion = document.createElement('div');
@@ -3309,6 +3421,8 @@
         
         function createEnhancedPowerupElement(powerup) {
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const element = document.createElement('div');
             element.className = 'entity powerup gpu-accelerated';
             element.id = `powerup_${powerup.id}`;
@@ -3380,7 +3494,7 @@
                 xp: () => {
                     const multipliers = { common: 1, uncommon: 1.5, rare: 2, epic: 3, legendary: 4, boss: 6 };
                     const xpBonus = Math.floor((50 + gameState.wave * 5) * (multipliers[powerup.rarity] || 1));
-                    addXP(xpBonus);
+                    addGameSessionXP(xpBonus);
                     showNotification(`⭐ XP Bonus: +${xpBonus}!`, 'success');
                 },
                 mega_boost: () => {
@@ -3574,6 +3688,8 @@
             if (!userSettings.particleEffects) return;
             
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const projectile = document.createElement('div');
             projectile.className = 'projectile gpu-accelerated';
             projectile.style.cssText = `
@@ -3603,6 +3719,8 @@
             if (!userSettings.particleEffects) return;
             
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const lightning = document.createElement('div');
             lightning.className = 'lightning-effect gpu-accelerated';
             
@@ -3626,6 +3744,8 @@
             if (!userSettings.particleEffects) return;
             
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const laser = document.createElement('div');
             laser.className = 'laser-effect gpu-accelerated';
             
@@ -3703,15 +3823,22 @@
             document.getElementById('currentWave').textContent = gameState.wave;
             document.getElementById('waveTimer').textContent = `${Math.ceil(gameState.waveTimer)}s`;
             document.getElementById('speedBtn').textContent = `${gameState.gameSpeed}x`;
-            document.getElementById('sessionXP').textContent = sessionXP;
+            document.getElementById('sessionXP').textContent = gameSessionXP;
+            document.getElementById('gameLevel').textContent = currentGameLevel;
             
             // Update wave progress
             const progress = ((CONFIG.WAVE_DURATION - gameState.waveTimer) / CONFIG.WAVE_DURATION) * 100;
-            document.getElementById('waveProgress').style.width = `${progress}%`;
+            const progressEl = document.getElementById('waveProgress');
+            if (progressEl) {
+                progressEl.style.width = `${progress}%`;
+            }
             
             // Update wave info
             const nextEnemyType = getEnemyTypeForWave(gameState.wave);
-            document.getElementById('waveInfo').textContent = `Next: ${ENEMY_TYPES[nextEnemyType].name}`;
+            const waveInfoEl = document.getElementById('waveInfo');
+            if (waveInfoEl) {
+                waveInfoEl.textContent = `Next: ${ENEMY_TYPES[nextEnemyType].name}`;
+            }
             
             updateTrapButtons();
             
@@ -3771,7 +3898,10 @@
         
         function pauseGame() {
             gameState.paused = !gameState.paused;
-            document.getElementById('pauseModal').classList.toggle('hidden', !gameState.paused);
+            const modal = document.getElementById('pauseModal');
+            if (modal) {
+                modal.classList.toggle('hidden', !gameState.paused);
+            }
             
             if (gameState.paused) {
                 showNotification('⏸️ Mission paused', 'info');
@@ -3802,28 +3932,41 @@
             }[gameState.gameMode] || 0;
             
             const totalBonus = baseBonus + waveBonus + difficultyBonus + modeBonus;
-            addXP(totalBonus);
+            addGameSessionXP(totalBonus);
             
-            document.getElementById('gameOverTitle').textContent = '🎉 MISSION ACCOMPLISHED!';
-            document.getElementById('finalStats').innerHTML = `
-                <div class="space-y-4">
-                    <div class="text-3xl text-green-400 font-bold animate-bounce">VICTORY!</div>
-                    <div class="grid grid-cols-2 gap-4 text-lg">
-                        <div>Final Score: <span class="text-primary font-bold">${gameState.score.toLocaleString()}</span></div>
-                        <div>Waves: <span class="text-secondary font-bold">${gameState.wave - 1}</span></div>
-                        <div>Eliminated: <span class="text-accent font-bold">${gameState.kills}</span></div>
-                        <div>Max Combo: <span class="text-purple-400 font-bold">${gameState.maxCombo}</span></div>
-                        <div>Lives Left: <span class="text-green-400 font-bold">${gameState.lives}</span></div>
-                        <div>XP Earned: <span class="text-blue-400 font-bold">${sessionXP}</span></div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-yellow-400 font-bold">Difficulty: ${gameState.difficulty.charAt(0).toUpperCase() + gameState.difficulty.slice(1)}</div>
-                        <div class="text-cyan-400">Mode: ${gameState.gameMode.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
-                    </div>
-                </div>
-            `;
+            const gameOverTitleEl = document.getElementById('gameOverTitle');
+            const finalStatsEl = document.getElementById('finalStats');
             
-            document.getElementById('gameOverModal').classList.remove('hidden');
+            if (gameOverTitleEl) {
+                gameOverTitleEl.textContent = '🎉 MISSION ACCOMPLISHED!';
+            }
+            
+            if (finalStatsEl) {
+                finalStatsEl.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="text-3xl text-green-400 font-bold animate-bounce">VICTORY!</div>
+                        <div class="grid grid-cols-2 gap-4 text-lg">
+                            <div>Final Score: <span class="text-primary font-bold">${gameState.score.toLocaleString()}</span></div>
+                            <div>Waves: <span class="text-secondary font-bold">${gameState.wave - 1}</span></div>
+                            <div>Eliminated: <span class="text-accent font-bold">${gameState.kills}</span></div>
+                            <div>Max Combo: <span class="text-purple-400 font-bold">${gameState.maxCombo}</span></div>
+                            <div>Lives Left: <span class="text-green-400 font-bold">${gameState.lives}</span></div>
+                            <div>XP Earned: <span class="text-blue-400 font-bold">${gameSessionXP}</span></div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-yellow-400 font-bold">Difficulty: ${gameState.difficulty.charAt(0).toUpperCase() + gameState.difficulty.slice(1)}</div>
+                            <div class="text-cyan-400">Mode: ${gameState.gameMode.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
+                            <div class="text-purple-400">Game Level Reached: ${currentGameLevel}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const modal = document.getElementById('gameOverModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+            
             saveGameData();
             updateLeaderboardData();
             checkAchievements();
@@ -3837,24 +3980,39 @@
             
             // Calculate consolation XP
             const consolationXP = Math.floor((gameState.kills * 3) + (gameState.wave * 8) + (gameState.score * 0.01));
-            addXP(consolationXP);
+            addGameSessionXP(consolationXP);
             
-            document.getElementById('gameOverTitle').textContent = '💀 Mission Failed';
-            document.getElementById('finalStats').innerHTML = `
-                <div class="space-y-4">
-                    <div class="text-3xl text-red-400 font-bold">DEFEAT</div>
-                    <div class="grid grid-cols-2 gap-4 text-lg">
-                        <div>Final Score: <span class="text-primary font-bold">${gameState.score.toLocaleString()}</span></div>
-                        <div>Wave: <span class="text-secondary font-bold">${gameState.wave}</span></div>
-                        <div>Eliminated: <span class="text-accent font-bold">${gameState.kills}</span></div>
-                        <div>Max Combo: <span class="text-purple-400 font-bold">${gameState.maxCombo}</span></div>
-                        <div>XP Earned: <span class="text-blue-400 font-bold">${sessionXP}</span></div>
-                        <div>Difficulty: <span class="text-yellow-400 font-bold">${gameState.difficulty.charAt(0).toUpperCase() + gameState.difficulty.slice(1)}</span></div>
+            const gameOverTitleEl = document.getElementById('gameOverTitle');
+            const finalStatsEl = document.getElementById('finalStats');
+            
+            if (gameOverTitleEl) {
+                gameOverTitleEl.textContent = '💀 Mission Failed';
+            }
+            
+            if (finalStatsEl) {
+                finalStatsEl.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="text-3xl text-red-400 font-bold">DEFEAT</div>
+                        <div class="grid grid-cols-2 gap-4 text-lg">
+                            <div>Final Score: <span class="text-primary font-bold">${gameState.score.toLocaleString()}</span></div>
+                            <div>Wave: <span class="text-secondary font-bold">${gameState.wave}</span></div>
+                            <div>Eliminated: <span class="text-accent font-bold">${gameState.kills}</span></div>
+                            <div>Max Combo: <span class="text-purple-400 font-bold">${gameState.maxCombo}</span></div>
+                            <div>XP Earned: <span class="text-blue-400 font-bold">${gameSessionXP}</span></div>
+                            <div>Game Level: <span class="text-cyan-400 font-bold">${currentGameLevel}</span></div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-yellow-400 font-bold">Difficulty: ${gameState.difficulty.charAt(0).toUpperCase() + gameState.difficulty.slice(1)}</div>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
             
-            document.getElementById('gameOverModal').classList.remove('hidden');
+            const modal = document.getElementById('gameOverModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+            
             saveGameData();
             updateLeaderboardData();
             checkAchievements();
@@ -3872,7 +4030,7 @@
                 if (!isUnlocked && achievement.condition(currentStats)) {
                     localStorage.setItem(`achievement_${currentUser.id}_${key}`, 'true');
                     newAchievements.push(achievement);
-                    addXP(achievement.xpReward);
+                    addGameSessionXP(achievement.xpReward);
                     showNotification(`🏆 Achievement: ${achievement.name}!`, 'achievement', 6000);
                     playSound('achievement');
                 }
@@ -3884,6 +4042,8 @@
         }
         
         function getCurrentStats() {
+            if (!currentUser) return {};
+            
             const saved = JSON.parse(localStorage.getItem(`userStats_${currentUser.id}`) || '{}');
             return {
                 highScore: Math.max(saved.highScore || 0, gameState.score),
@@ -3906,6 +4066,9 @@
         }
         
         function displayNewAchievements(achievements) {
+            const achievementsEl = document.getElementById('achievements');
+            if (!achievementsEl) return;
+            
             const achievementsHtml = achievements.map(achievement => `
                 <div class="bg-yellow-500/20 rounded-lg p-4 mb-3 animate-bounce-in">
                     <div class="flex items-center space-x-4">
@@ -3919,7 +4082,7 @@
                 </div>
             `).join('');
             
-            document.getElementById('achievements').innerHTML = `
+            achievementsEl.innerHTML = `
                 <h3 class="text-lg font-bold text-yellow-300 mb-4 text-center">🏆 New Achievements!</h3>
                 ${achievementsHtml}
             `;
@@ -3938,8 +4101,9 @@
                 is_victory: gameState.lives > 0,
                 game_mode: gameState.gameMode,
                 difficulty: gameState.difficulty,
-                xp_earned: sessionXP,
-                traps_built: gameState.traps.length
+                xp_earned: gameSessionXP,
+                traps_built: gameState.traps.length,
+                game_level_reached: currentGameLevel
             };
             
             if (supabase && currentUser.id !== 'guest') {
@@ -3975,6 +4139,8 @@
         
         function clearCanvas() {
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const entities = canvas.querySelectorAll('.entity, .explosion-effect, .lightning-effect, .laser-effect, .particle-effect, .damage-number');
             entities.forEach(entity => entity.remove());
             
@@ -3992,6 +4158,7 @@
         
         function setupCanvasEvents() {
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
             
             canvas.addEventListener('click', (e) => {
                 if (!gameState.playing || gameState.paused) return;
@@ -4000,7 +4167,7 @@
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 
-                const pathWidth = canvas.querySelector('.game-path').offsetWidth;
+                const pathWidth = canvas.querySelector('.game-path')?.offsetWidth || 100;
                 
                 // Don't allow building on the path
                 if (x < pathWidth + 20) {
@@ -4048,9 +4215,9 @@
         function buildTrap(x, y) {
             const trapType = TRAP_TYPES[gameState.selectedTrap];
             
-            // Check level requirement
-            if (playerLevel < trapType.requiredLevel) {
-                showNotification(`❌ Requires Level ${trapType.requiredLevel}!`, 'error');
+            // Check game level requirement
+            if (currentGameLevel < trapType.requiredGameLevel) {
+                showNotification(`❌ Requires Game Level ${trapType.requiredGameLevel}!`, 'error');
                 return;
             }
             
@@ -4094,6 +4261,8 @@
         
         function createTrapElement(trap) {
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const trapType = TRAP_TYPES[trap.type];
             
             const element = document.createElement('div');
@@ -4154,6 +4323,8 @@
             hideRangePreview();
             
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const trapType = TRAP_TYPES[gameState.selectedTrap];
             const rangeCircle = document.createElement('div');
             rangeCircle.id = 'rangePreview';
@@ -4183,6 +4354,8 @@
             hideTrapRange();
             
             const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            
             const rangeCircle = document.createElement('div');
             rangeCircle.id = 'trapRange';
             rangeCircle.className = 'gpu-accelerated';
@@ -4267,20 +4440,20 @@
         
         function setupEventListeners() {
             // Auth events
-            document.getElementById('loginBtn').addEventListener('click', handleLogin);
-            document.getElementById('signupBtn').addEventListener('click', handleSignup);
-            document.getElementById('playAsGuestBtn').addEventListener('click', playAsGuest);
-            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('loginBtn')?.addEventListener('click', handleLogin);
+            document.getElementById('signupBtn')?.addEventListener('click', handleSignup);
+            document.getElementById('playAsGuestBtn')?.addEventListener('click', playAsGuest);
+            document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
             
             // Form toggles
-            document.getElementById('showSignupBtn').addEventListener('click', () => {
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('signupForm').classList.remove('hidden');
+            document.getElementById('showSignupBtn')?.addEventListener('click', () => {
+                document.getElementById('loginForm')?.classList.add('hidden');
+                document.getElementById('signupForm')?.classList.remove('hidden');
             });
             
-            document.getElementById('showLoginBtn').addEventListener('click', () => {
-                document.getElementById('signupForm').classList.add('hidden');
-                document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('showLoginBtn')?.addEventListener('click', () => {
+                document.getElementById('signupForm')?.classList.add('hidden');
+                document.getElementById('loginForm')?.classList.remove('hidden');
             });
             
             // Enhanced difficulty selection with proper event handling
@@ -4313,94 +4486,111 @@
             });
             
             // Menu events
-            document.getElementById('startGameBtn').addEventListener('click', initGame);
-            document.getElementById('leaderboardBtn').addEventListener('click', () => {
+            document.getElementById('startGameBtn')?.addEventListener('click', initGame);
+            document.getElementById('leaderboardBtn')?.addEventListener('click', () => {
                 showScreen('leaderboardScreen');
                 loadLeaderboard('score');
             });
-            document.getElementById('profileBtn').addEventListener('click', () => {
+            document.getElementById('profileBtn')?.addEventListener('click', () => {
                 showScreen('profileScreen');
                 loadProfile();
             });
-            document.getElementById('settingsBtn').addEventListener('click', () => {
+            document.getElementById('settingsBtn')?.addEventListener('click', () => {
                 showScreen('settingsScreen');
             });
-            document.getElementById('dailyChallengeBtn').addEventListener('click', () => {
+            document.getElementById('dailyChallengeBtn')?.addEventListener('click', () => {
                 showScreen('dailyChallengeScreen');
                 loadDailyChallenge();
             });
             
             // Back buttons
-            document.getElementById('backToMenuBtn').addEventListener('click', () => {
+            document.getElementById('backToMenuBtn')?.addEventListener('click', () => {
                 gameState.playing = false;
                 if (gameLoop) clearInterval(gameLoop);
                 showMainMenu();
             });
-            document.getElementById('backFromLeaderboardBtn').addEventListener('click', () => showMainMenu());
-            document.getElementById('backFromProfileBtn').addEventListener('click', () => showMainMenu());
-            document.getElementById('backFromSettingsBtn').addEventListener('click', () => showMainMenu());
-            document.getElementById('backFromChallengeBtn').addEventListener('click', () => showMainMenu());
+            document.getElementById('backFromLeaderboardBtn')?.addEventListener('click', () => showMainMenu());
+            document.getElementById('backFromProfileBtn')?.addEventListener('click', () => showMainMenu());
+            document.getElementById('backFromSettingsBtn')?.addEventListener('click', () => showMainMenu());
+            document.getElementById('backFromChallengeBtn')?.addEventListener('click', () => showMainMenu());
             
             // Delete data functionality
-            document.getElementById('deleteDataBtn').addEventListener('click', () => {
-                document.getElementById('deleteConfirmModal').classList.remove('hidden');
+            document.getElementById('deleteDataBtn')?.addEventListener('click', () => {
+                const modal = document.getElementById('deleteConfirmModal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                }
             });
             
-            document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            document.getElementById('confirmDeleteBtn')?.addEventListener('click', () => {
                 deleteAllUserData();
-                document.getElementById('deleteConfirmModal').classList.add('hidden');
+                const modal = document.getElementById('deleteConfirmModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
             });
             
-            document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
-                document.getElementById('deleteConfirmModal').classList.add('hidden');
+            document.getElementById('cancelDeleteBtn')?.addEventListener('click', () => {
+                const modal = document.getElementById('deleteConfirmModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
             });
             
             // Game control events
-            document.getElementById('pauseGameBtn').addEventListener('click', pauseGame);
-            document.getElementById('speedBtn').addEventListener('click', () => {
+            document.getElementById('pauseGameBtn')?.addEventListener('click', pauseGame);
+            document.getElementById('speedBtn')?.addEventListener('click', () => {
                 gameState.gameSpeed = gameState.gameSpeed >= 4 ? 1 : gameState.gameSpeed + 1;
             });
             
             // Enhanced game actions with improved feedback
-            document.getElementById('sellModeBtn').addEventListener('click', () => {
+            document.getElementById('sellModeBtn')?.addEventListener('click', () => {
                 gameState.sellMode = !gameState.sellMode;
                 gameState.selectedTrap = null;
                 gameState.upgradeMode = false;
                 const btn = document.getElementById('sellModeBtn');
                 
                 if (gameState.sellMode) {
-                    btn.innerHTML = '<span class="flex items-center justify-center space-x-2"><span>🔨</span><span>Build Mode</span></span>';
-                    btn.className = 'w-full bg-yellow-500/20 hover:bg-yellow-500/30 py-3 rounded-lg transition-colors font-semibold text-sm';
+                    if (btn) {
+                        btn.innerHTML = '<span class="flex items-center justify-center space-x-2"><span>🔨</span><span>Build Mode</span></span>';
+                        btn.className = 'w-full bg-yellow-500/20 hover:bg-yellow-500/30 py-3 rounded-lg transition-colors font-semibold text-sm';
+                    }
                     showNotification('💰 Salvage mode: Click defenses to sell', 'info');
                 } else {
-                    btn.innerHTML = '<span class="flex items-center justify-center space-x-2"><span>💰</span><span>Salvage Mode</span></span>';
-                    btn.className = 'w-full bg-red-500/20 hover:bg-red-500/30 py-3 rounded-lg transition-colors font-semibold text-sm';
+                    if (btn) {
+                        btn.innerHTML = '<span class="flex items-center justify-center space-x-2"><span>💰</span><span>Salvage Mode</span></span>';
+                        btn.className = 'w-full bg-red-500/20 hover:bg-red-500/30 py-3 rounded-lg transition-colors font-semibold text-sm';
+                    }
                     showNotification('🔨 Build mode activated', 'info');
                 }
                 
                 updateTrapButtons();
             });
             
-            document.getElementById('upgradeMode').addEventListener('click', () => {
+            document.getElementById('upgradeMode')?.addEventListener('click', () => {
                 gameState.upgradeMode = !gameState.upgradeMode;
                 gameState.selectedTrap = null;
                 gameState.sellMode = false;
                 const btn = document.getElementById('upgradeMode');
                 
                 if (gameState.upgradeMode) {
-                    btn.innerHTML = '<span class="flex items-center justify-center space-x-2"><span>🔨</span><span>Build Mode</span></span>';
-                    btn.className = 'w-full bg-yellow-500/20 hover:bg-yellow-500/30 py-3 rounded-lg transition-colors font-semibold text-sm';
+                    if (btn) {
+                        btn.innerHTML = '<span class="flex items-center justify-center space-x-2"><span>🔨</span><span>Build Mode</span></span>';
+                        btn.className = 'w-full bg-yellow-500/20 hover:bg-yellow-500/30 py-3 rounded-lg transition-colors font-semibold text-sm';
+                    }
                     showNotification('⬆️ Upgrade mode: Click defenses to upgrade', 'info');
                 } else {
-                    btn.innerHTML = '<span class="flex items-center justify-center space-x-2"><span>⬆️</span><span>Upgrade Mode</span></span>';
-                    btn.className = 'w-full bg-green-500/20 hover:bg-green-500/30 py-3 rounded-lg transition-colors font-semibold text-sm';
+                    if (btn) {
+                        btn.innerHTML = '<span class="flex items-center justify-center space-x-2"><span>⬆️</span><span>Upgrade Mode</span></span>';
+                        btn.className = 'w-full bg-green-500/20 hover:bg-green-500/30 py-3 rounded-lg transition-colors font-semibold text-sm';
+                    }
                     showNotification('🔨 Build mode activated', 'info');
                 }
                 
                 updateTrapButtons();
             });
             
-            document.getElementById('clearAllBtn').addEventListener('click', () => {
+            document.getElementById('clearAllBtn')?.addEventListener('click', () => {
                 if (gameState.traps.length === 0) {
                     showNotification('⚠️ No defenses to clear!', 'warning');
                     return;
@@ -4420,7 +4610,9 @@
                         gameState.traps = [];
                         
                         const canvas = document.getElementById('gameCanvas');
-                        canvas.querySelectorAll('.trap').forEach(trap => trap.remove());
+                        if (canvas) {
+                            canvas.querySelectorAll('.trap').forEach(trap => trap.remove());
+                        }
                         
                         showNotification(`🗑️ Emergency clear complete! Salvaged $${totalRefund}`, 'success');
                         playSound('coin');
@@ -4429,7 +4621,7 @@
             });
             
             // Enhanced power-up buttons
-            document.getElementById('airstrikeBtn').addEventListener('click', () => {
+            document.getElementById('airstrikeBtn')?.addEventListener('click', () => {
                 if (gameState.pizzaBucks >= 75) {
                     gameState.pizzaBucks -= 75;
                     gameState.enemies.forEach(enemy => {
@@ -4444,7 +4636,7 @@
                 }
             });
             
-            document.getElementById('freezeBtn').addEventListener('click', () => {
+            document.getElementById('freezeBtn')?.addEventListener('click', () => {
                 if (gameState.pizzaBucks >= 50) {
                     gameState.pizzaBucks -= 50;
                     gameState.enemies.forEach(enemy => {
@@ -4457,7 +4649,7 @@
                 }
             });
             
-            document.getElementById('repairBtn').addEventListener('click', () => {
+            document.getElementById('repairBtn')?.addEventListener('click', () => {
                 if (gameState.pizzaBucks >= 60) {
                     gameState.pizzaBucks -= 60;
                     gameState.lives = Math.min(gameState.lives + 2, 12);
@@ -4468,7 +4660,7 @@
                 }
             });
             
-            document.getElementById('boostBtn').addEventListener('click', () => {
+            document.getElementById('boostBtn')?.addEventListener('click', () => {
                 if (gameState.pizzaBucks >= 45) {
                     gameState.pizzaBucks -= 45;
                     gameState.traps.forEach(trap => {
@@ -4483,27 +4675,42 @@
             });
             
             // Modal events
-            document.getElementById('resumeBtn').addEventListener('click', pauseGame);
-            document.getElementById('restartBtn').addEventListener('click', () => {
-                document.getElementById('pauseModal').classList.add('hidden');
+            document.getElementById('resumeBtn')?.addEventListener('click', pauseGame);
+            document.getElementById('restartBtn')?.addEventListener('click', () => {
+                const modal = document.getElementById('pauseModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
                 initGame();
             });
-            document.getElementById('quitBtn').addEventListener('click', () => {
-                document.getElementById('pauseModal').classList.add('hidden');
+            document.getElementById('quitBtn')?.addEventListener('click', () => {
+                const modal = document.getElementById('pauseModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
                 gameState.playing = false;
                 if (gameLoop) clearInterval(gameLoop);
                 showMainMenu();
             });
-            document.getElementById('playAgainBtn').addEventListener('click', () => {
-                document.getElementById('gameOverModal').classList.add('hidden');
+            document.getElementById('playAgainBtn')?.addEventListener('click', () => {
+                const modal = document.getElementById('gameOverModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
                 initGame();
             });
-            document.getElementById('menuBtn').addEventListener('click', () => {
-                document.getElementById('gameOverModal').classList.add('hidden');
+            document.getElementById('menuBtn')?.addEventListener('click', () => {
+                const modal = document.getElementById('gameOverModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
                 showMainMenu();
             });
-            document.getElementById('levelUpContinueBtn').addEventListener('click', () => {
-                document.getElementById('levelUpModal').classList.add('hidden');
+            document.getElementById('levelUpContinueBtn')?.addEventListener('click', () => {
+                const modal = document.getElementById('levelUpModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
                 setupEnhancedTrapShop(); // Refresh trap shop with new unlocks
             });
             
@@ -4545,11 +4752,11 @@
                             break;
                         case 's':
                         case 'S':
-                            document.getElementById('sellModeBtn').click();
+                            document.getElementById('sellModeBtn')?.click();
                             break;
                         case 'u':
                         case 'U':
-                            document.getElementById('upgradeMode').click();
+                            document.getElementById('upgradeMode')?.click();
                             break;
                     }
                 }
@@ -4604,9 +4811,11 @@
             keysToDelete.forEach(key => localStorage.removeItem(key));
             
             // Reset player progress
-            playerLevel = 1;
-            playerXP = 0;
-            totalScore = 0;
+            playerProfileRank = 1;
+            totalProfileXP = 0;
+            highScore = 0;
+            currentGameLevel = 1;
+            gameSessionXP = 0;
             
             // If using Supabase, delete from there too
             if (supabase && currentUser.id !== 'guest') {
@@ -4625,8 +4834,13 @@
         
         // Authentication functions with enhanced feedback
         async function handleLogin() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
+            const emailEl = document.getElementById('loginEmail');
+            const passwordEl = document.getElementById('loginPassword');
+            
+            if (!emailEl || !passwordEl) return;
+            
+            const email = emailEl.value.trim();
+            const password = passwordEl.value.trim();
             
             if (!email || !password) {
                 showNotification('❌ Please complete all fields', 'error');
@@ -4658,9 +4872,15 @@
         }
         
         async function handleSignup() {
-            const username = document.getElementById('signupUsername').value.trim();
-            const email = document.getElementById('signupEmail').value.trim();
-            const password = document.getElementById('signupPassword').value.trim();
+            const usernameEl = document.getElementById('signupUsername');
+            const emailEl = document.getElementById('signupEmail');
+            const passwordEl = document.getElementById('signupPassword');
+            
+            if (!usernameEl || !emailEl || !passwordEl) return;
+            
+            const username = usernameEl.value.trim();
+            const email = emailEl.value.trim();
+            const password = passwordEl.value.trim();
             
             if (!username || !email || !password) {
                 showNotification('❌ Please complete all fields', 'error');
@@ -4717,9 +4937,11 @@
                 await supabase.auth.signOut();
             }
             currentUser = null;
-            playerLevel = 1;
-            playerXP = 0;
-            totalScore = 0;
+            playerProfileRank = 1;
+            totalProfileXP = 0;
+            highScore = 0;
+            currentGameLevel = 1;
+            gameSessionXP = 0;
             showNotification('🚪 Session terminated', 'info');
             showScreen('authScreen');
         }
@@ -4731,8 +4953,11 @@
             }
             
             const username = currentUser.user_metadata?.username || currentUser.email?.split('@')[0] || 'Commander';
-            document.getElementById('userInfo').textContent = `Welcome back, ${username}!`;
-            updatePlayerLevel();
+            const userInfoEl = document.getElementById('userInfo');
+            if (userInfoEl) {
+                userInfoEl.textContent = `Welcome back, ${username}!`;
+            }
+            updatePlayerDisplays();
             showScreen('menuScreen');
         }
         
@@ -4750,29 +4975,59 @@
             showNotification('💾 Configuration saved successfully!', 'success');
             
             // Apply immediate effects
-            document.getElementById('fpsCounter').classList.toggle('hidden', !userSettings.showFPS);
+            const fpsCounter = document.getElementById('fpsCounter');
+            if (fpsCounter) {
+                fpsCounter.classList.toggle('hidden', !userSettings.showFPS);
+            }
         }
         
         function updateSettingsUI() {
             // Update toggles
-            document.getElementById('autoPauseToggle').classList.toggle('active', userSettings.autoPause);
-            document.getElementById('damageNumbersToggle').classList.toggle('active', userSettings.showDamageNumbers);
-            document.getElementById('trapRangesToggle').classList.toggle('active', userSettings.showTrapRanges);
-            document.getElementById('soundEffectsToggle').classList.toggle('active', userSettings.soundEffects);
-            document.getElementById('backgroundMusicToggle').classList.toggle('active', userSettings.backgroundMusic);
-            document.getElementById('particleEffectsToggle').classList.toggle('active', userSettings.particleEffects);
-            document.getElementById('screenShakeToggle').classList.toggle('active', userSettings.screenShake);
-            document.getElementById('animationQualityToggle').classList.toggle('active', userSettings.animationQuality);
-            document.getElementById('fpsToggle').classList.toggle('active', userSettings.showFPS);
+            const toggles = {
+                'autoPauseToggle': 'autoPause',
+                'damageNumbersToggle': 'showDamageNumbers',
+                'trapRangesToggle': 'showTrapRanges',
+                'soundEffectsToggle': 'soundEffects',
+                'backgroundMusicToggle': 'backgroundMusic',
+                'particleEffectsToggle': 'particleEffects',
+                'screenShakeToggle': 'screenShake',
+                'animationQualityToggle': 'animationQuality',
+                'fpsToggle': 'showFPS'
+            };
+            
+            Object.entries(toggles).forEach(([toggleId, setting]) => {
+                const toggle = document.getElementById(toggleId);
+                if (toggle) {
+                    toggle.classList.toggle('active', userSettings[setting]);
+                }
+            });
             
             // Update selects and sliders
-            document.getElementById('defaultSpeedSelect').value = userSettings.defaultSpeed;
-            document.getElementById('graphicsQualitySelect').value = userSettings.graphicsQuality;
-            document.getElementById('masterVolumeSlider').value = userSettings.masterVolume;
-            document.getElementById('volumeDisplay').textContent = `${userSettings.masterVolume}%`;
+            const defaultSpeedSelect = document.getElementById('defaultSpeedSelect');
+            if (defaultSpeedSelect) {
+                defaultSpeedSelect.value = userSettings.defaultSpeed;
+            }
+            
+            const graphicsQualitySelect = document.getElementById('graphicsQualitySelect');
+            if (graphicsQualitySelect) {
+                graphicsQualitySelect.value = userSettings.graphicsQuality;
+            }
+            
+            const masterVolumeSlider = document.getElementById('masterVolumeSlider');
+            if (masterVolumeSlider) {
+                masterVolumeSlider.value = userSettings.masterVolume;
+            }
+            
+            const volumeDisplay = document.getElementById('volumeDisplay');
+            if (volumeDisplay) {
+                volumeDisplay.textContent = `${userSettings.masterVolume}%`;
+            }
             
             // Apply FPS display setting
-            document.getElementById('fpsCounter').classList.toggle('hidden', !userSettings.showFPS);
+            const fpsCounter = document.getElementById('fpsCounter');
+            if (fpsCounter) {
+                fpsCounter.classList.toggle('hidden', !userSettings.showFPS);
+            }
         }
         
         function setupSettingsEvents() {
@@ -4801,25 +5056,36 @@
             });
             
             // Select dropdowns
-            document.getElementById('defaultSpeedSelect').addEventListener('change', (e) => {
-                userSettings.defaultSpeed = parseInt(e.target.value);
-            });
+            const defaultSpeedSelect = document.getElementById('defaultSpeedSelect');
+            if (defaultSpeedSelect) {
+                defaultSpeedSelect.addEventListener('change', (e) => {
+                    userSettings.defaultSpeed = parseInt(e.target.value);
+                });
+            }
             
-            document.getElementById('graphicsQualitySelect').addEventListener('change', (e) => {
-                userSettings.graphicsQuality = e.target.value;
-            });
+            const graphicsQualitySelect = document.getElementById('graphicsQualitySelect');
+            if (graphicsQualitySelect) {
+                graphicsQualitySelect.addEventListener('change', (e) => {
+                    userSettings.graphicsQuality = e.target.value;
+                });
+            }
             
             // Volume slider
             const volumeSlider = document.getElementById('masterVolumeSlider');
             const volumeDisplay = document.getElementById('volumeDisplay');
             
-            volumeSlider.addEventListener('input', (e) => {
-                userSettings.masterVolume = parseInt(e.target.value);
-                volumeDisplay.textContent = `${userSettings.masterVolume}%`;
-            });
+            if (volumeSlider && volumeDisplay) {
+                volumeSlider.addEventListener('input', (e) => {
+                    userSettings.masterVolume = parseInt(e.target.value);
+                    volumeDisplay.textContent = `${userSettings.masterVolume}%`;
+                });
+            }
             
             // Save button
-            document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+            const saveBtn = document.getElementById('saveSettingsBtn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveSettings);
+            }
         }
         
         // Enhanced leaderboard functions
@@ -4828,9 +5094,9 @@
             const contentEl = document.getElementById('leaderboardContent');
             const errorEl = document.getElementById('leaderboardError');
             
-            loadingEl.classList.remove('hidden');
-            contentEl.classList.add('hidden');
-            errorEl.classList.add('hidden');
+            if (loadingEl) loadingEl.classList.remove('hidden');
+            if (contentEl) contentEl.classList.add('hidden');
+            if (errorEl) errorEl.classList.add('hidden');
             
             try {
                 let data = [];
@@ -4853,8 +5119,8 @@
                 
             } catch (error) {
                 console.error('Error loading leaderboard:', error);
-                loadingEl.classList.add('hidden');
-                errorEl.classList.remove('hidden');
+                if (loadingEl) loadingEl.classList.add('hidden');
+                if (errorEl) errorEl.classList.remove('hidden');
             }
         }
         
@@ -4881,8 +5147,8 @@
             const loadingEl = document.getElementById('leaderboardLoading');
             const contentEl = document.getElementById('leaderboardContent');
             
-            loadingEl.classList.add('hidden');
-            contentEl.classList.remove('hidden');
+            if (loadingEl) loadingEl.classList.add('hidden');
+            if (contentEl) contentEl.classList.remove('hidden');
             
             const typeLabels = {
                 score: { main: 'Score', secondary: 'Wave' },
@@ -4891,30 +5157,32 @@
                 achievements: { main: 'Achievements', secondary: 'Points' }
             };
             
-            contentEl.innerHTML = data.map(player => `
-                <div class="leaderboard-item rounded-lg p-4 flex items-center justify-between hover:bg-white/10 transition-all">
-                    <div class="flex items-center space-x-4">
-                        <div class="rank-medal ${getRankClass(player.rank)} flex-shrink-0">
-                            ${player.rank}
-                        </div>
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-xl font-bold flex-shrink-0">
-                            👤
-                        </div>
-                        <div class="min-w-0">
-                            <div class="font-bold text-lg truncate">${player.username}</div>
-                            <div class="text-sm text-gray-400">${typeLabels[type].secondary}: ${player.secondary_value.toLocaleString()}</div>
-                            <div class="text-xs">
-                                ${player.game_mode ? `<span class="text-blue-400">${player.game_mode}</span>` : ''}
-                                ${player.difficulty ? `<span class="text-orange-400 ml-2">${player.difficulty}</span>` : ''}
+            if (contentEl) {
+                contentEl.innerHTML = data.map(player => `
+                    <div class="leaderboard-item rounded-lg p-4 flex items-center justify-between hover:bg-white/10 transition-all">
+                        <div class="flex items-center space-x-4">
+                            <div class="rank-medal ${getRankClass(player.rank)} flex-shrink-0">
+                                ${player.rank}
+                            </div>
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-xl font-bold flex-shrink-0">
+                                👤
+                            </div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-lg truncate">${player.username}</div>
+                                <div class="text-sm text-gray-400">${typeLabels[type].secondary}: ${player.secondary_value.toLocaleString()}</div>
+                                <div class="text-xs">
+                                    ${player.game_mode ? `<span class="text-blue-400">${player.game_mode}</span>` : ''}
+                                    ${player.difficulty ? `<span class="text-orange-400 ml-2">${player.difficulty}</span>` : ''}
+                                </div>
                             </div>
                         </div>
+                        <div class="text-right flex-shrink-0">
+                            <div class="text-2xl font-bold text-primary">${player.value.toLocaleString()}</div>
+                            <div class="text-sm text-gray-400">${typeLabels[type].main}</div>
+                        </div>
                     </div>
-                    <div class="text-right flex-shrink-0">
-                        <div class="text-2xl font-bold text-primary">${player.value.toLocaleString()}</div>
-                        <div class="text-sm text-gray-400">${typeLabels[type].main}</div>
-                    </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
         
         function getRankClass(rank) {
@@ -4925,38 +5193,56 @@
         }
         
         function setupLeaderboardEvents() {
-            document.getElementById('scoreLeaderboard').addEventListener('click', () => {
-                setActiveLeaderboardTab('scoreLeaderboard');
-                loadLeaderboard('score');
-            });
+            const scoreBtn = document.getElementById('scoreLeaderboard');
+            const waveBtn = document.getElementById('waveLeaderboard');
+            const killsBtn = document.getElementById('killsLeaderboard');
+            const achievementBtn = document.getElementById('achievementLeaderboard');
+            const retryBtn = document.getElementById('retryLeaderboard');
             
-            document.getElementById('waveLeaderboard').addEventListener('click', () => {
-                setActiveLeaderboardTab('waveLeaderboard');
-                loadLeaderboard('waves');
-            });
+            if (scoreBtn) {
+                scoreBtn.addEventListener('click', () => {
+                    setActiveLeaderboardTab('scoreLeaderboard');
+                    loadLeaderboard('score');
+                });
+            }
             
-            document.getElementById('killsLeaderboard').addEventListener('click', () => {
-                setActiveLeaderboardTab('killsLeaderboard');
-                loadLeaderboard('kills');
-            });
+            if (waveBtn) {
+                waveBtn.addEventListener('click', () => {
+                    setActiveLeaderboardTab('waveLeaderboard');
+                    loadLeaderboard('waves');
+                });
+            }
             
-            document.getElementById('achievementLeaderboard').addEventListener('click', () => {
-                setActiveLeaderboardTab('achievementLeaderboard');
-                loadLeaderboard('achievements');
-            });
+            if (killsBtn) {
+                killsBtn.addEventListener('click', () => {
+                    setActiveLeaderboardTab('killsLeaderboard');
+                    loadLeaderboard('kills');
+                });
+            }
             
-            document.getElementById('retryLeaderboard').addEventListener('click', () => {
-                loadLeaderboard('score');
-            });
+            if (achievementBtn) {
+                achievementBtn.addEventListener('click', () => {
+                    setActiveLeaderboardTab('achievementLeaderboard');
+                    loadLeaderboard('achievements');
+                });
+            }
+            
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => {
+                    loadLeaderboard('score');
+                });
+            }
         }
         
         function setActiveLeaderboardTab(activeId) {
             ['scoreLeaderboard', 'waveLeaderboard', 'killsLeaderboard', 'achievementLeaderboard'].forEach(id => {
                 const btn = document.getElementById(id);
-                if (id === activeId) {
-                    btn.className = 'px-4 py-2 rounded-lg btn-primary text-sm';
-                } else {
-                    btn.className = 'px-4 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm';
+                if (btn) {
+                    if (id === activeId) {
+                        btn.className = 'px-4 py-2 rounded-lg btn-primary text-sm';
+                    } else {
+                        btn.className = 'px-4 py-2 rounded-lg hover:bg-white/10 transition-colors text-sm';
+                    }
                 }
             });
         }
@@ -4966,9 +5252,17 @@
             if (!currentUser) return;
             
             const username = currentUser.user_metadata?.username || currentUser.email?.split('@')[0] || 'Commander';
-            document.getElementById('profileUsername').textContent = username;
-            document.getElementById('profileEmail').textContent = currentUser.email || 'guest@hq.com';
-            document.getElementById('profileLevel').textContent = `Level ${playerLevel}`;
+            const profileUsernameEl = document.getElementById('profileUsername');
+            const profileEmailEl = document.getElementById('profileEmail');
+            const profileRankEl = document.getElementById('profileRank');
+            const profileTotalXPEl = document.getElementById('profileTotalXP');
+            
+            if (profileUsernameEl) profileUsernameEl.textContent = username;
+            if (profileEmailEl) profileEmailEl.textContent = currentUser.email || 'guest@hq.com';
+            
+            const rankInfo = getProfileRankInfo(playerProfileRank);
+            if (profileRankEl) profileRankEl.textContent = `${rankInfo.name}`;
+            if (profileTotalXPEl) profileTotalXPEl.textContent = `${totalProfileXP.toLocaleString()} XP`;
             
             if (supabase && currentUser.id !== 'guest') {
                 try {
@@ -4994,26 +5288,41 @@
             const joinDate = currentUser.created_at ? 
                 new Date(currentUser.created_at).toLocaleDateString() : 
                 new Date().toLocaleDateString();
-            document.getElementById('profileJoinDate').textContent = `Enlisted: ${joinDate}`;
-            
-            const rankInfo = getRankInfo(playerLevel);
-            document.getElementById('profileRank').textContent = `Rank: ${rankInfo.name}`;
+            const profileJoinDateEl = document.getElementById('profileJoinDate');
+            if (profileJoinDateEl) {
+                profileJoinDateEl.textContent = joinDate;
+            }
         }
         
         function updateProfileStats(stats) {
-            document.getElementById('profileHighScore').textContent = (stats.highScore || stats.highest_score || 0).toLocaleString();
-            document.getElementById('profileMaxWave').textContent = (stats.maxWave || stats.highest_wave || 0);
-            document.getElementById('profileTotalKills').textContent = (stats.totalKills || stats.total_enemies_killed || 0).toLocaleString();
-            document.getElementById('profileGamesPlayed').textContent = (stats.gamesPlayed || stats.total_games_played || 0);
+            const elements = {
+                'profileHighScore': (stats.highScore || stats.highest_score || 0).toLocaleString(),
+                'profileMaxWave': (stats.maxWave || stats.highest_wave || 0),
+                'profileTotalKills': (stats.totalKills || stats.total_enemies_killed || 0).toLocaleString(),
+                'profileGamesPlayed': (stats.gamesPlayed || stats.total_games_played || 0)
+            };
+            
+            Object.entries(elements).forEach(([id, value]) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            });
             
             const winRate = stats.gamesPlayed > 0 ? Math.round(((stats.wins || 0) / stats.gamesPlayed) * 100) : 0;
-            document.getElementById('profileWinRate').textContent = `${winRate}%`;
+            const profileWinRateEl = document.getElementById('profileWinRate');
+            if (profileWinRateEl) {
+                profileWinRateEl.textContent = `${winRate}%`;
+            }
             
             const playTimeHours = Math.floor((stats.playTime || 0) / 3600);
-            document.getElementById('profilePlayTime').textContent = `${playTimeHours}h`;
+            const profilePlayTimeEl = document.getElementById('profilePlayTime');
+            if (profilePlayTimeEl) {
+                profilePlayTimeEl.textContent = `${playTimeHours}h`;
+            }
         }
         
         function loadAchievements() {
+            if (!currentUser) return;
+            
             const achievements = Object.entries(ACHIEVEMENTS).map(([key, achievement]) => {
                 const isUnlocked = JSON.parse(localStorage.getItem(`achievement_${currentUser.id}_${key}`) || 'false');
                 return {
@@ -5024,19 +5333,21 @@
             });
             
             const container = document.getElementById('achievementsList');
-            container.innerHTML = achievements.map(achievement => `
-                <div class="achievement-badge ${achievement.unlocked ? '' : 'locked'} rounded-lg p-3 flex items-center space-x-3 transition-all hover:scale-105">
-                    <div class="text-2xl flex-shrink-0">${achievement.unlocked ? achievement.icon : '🔒'}</div>
-                    <div class="min-w-0">
-                        <div class="font-bold ${achievement.unlocked ? 'text-white' : 'text-gray-500'}">${achievement.name}</div>
-                        <div class="text-sm text-gray-400">${achievement.description}</div>
-                        ${achievement.unlocked ? 
-                            `<div class="text-xs text-green-400">+${achievement.xpReward} XP</div>` : 
-                            `<div class="text-xs text-gray-500">Locked</div>`
-                        }
+            if (container) {
+                container.innerHTML = achievements.map(achievement => `
+                    <div class="achievement-badge ${achievement.unlocked ? '' : 'locked'} rounded-lg p-3 flex items-center space-x-3 transition-all hover:scale-105">
+                        <div class="text-2xl flex-shrink-0">${achievement.unlocked ? achievement.icon : '🔒'}</div>
+                        <div class="min-w-0">
+                            <div class="font-bold ${achievement.unlocked ? 'text-white' : 'text-gray-500'}">${achievement.name}</div>
+                            <div class="text-sm text-gray-400">${achievement.description}</div>
+                            ${achievement.unlocked ? 
+                                `<div class="text-xs text-green-400">+${achievement.xpReward} XP</div>` : 
+                                `<div class="text-xs text-gray-500">Locked</div>`
+                            }
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
         
         // Enhanced Daily Challenge functions
@@ -5053,16 +5364,23 @@
                 localStorage.setItem(`dailyChallenge_${today}`, JSON.stringify(challenge));
             }
             
-            document.getElementById('challengeTitle').textContent = challenge.title;
-            document.getElementById('challengeDescription').textContent = challenge.description;
-            document.getElementById('challengeProgress').textContent = `${challenge.progress}/${challenge.target}`;
+            const challengeTitleEl = document.getElementById('challengeTitle');
+            const challengeDescriptionEl = document.getElementById('challengeDescription');
+            const challengeProgressEl = document.getElementById('challengeProgress');
             
-            document.getElementById('startChallengeBtn').addEventListener('click', () => {
-                // Set up special challenge mode
-                selectedGameMode = 'challenge';
-                selectedDifficulty = challenge.difficulty;
-                initGame();
-            });
+            if (challengeTitleEl) challengeTitleEl.textContent = challenge.title;
+            if (challengeDescriptionEl) challengeDescriptionEl.textContent = challenge.description;
+            if (challengeProgressEl) challengeProgressEl.textContent = `${challenge.progress}/${challenge.target}`;
+            
+            const startChallengeBtn = document.getElementById('startChallengeBtn');
+            if (startChallengeBtn) {
+                startChallengeBtn.addEventListener('click', () => {
+                    // Set up special challenge mode
+                    selectedGameMode = 'challenge';
+                    selectedDifficulty = challenge.difficulty;
+                    initGame();
+                });
+            }
         }
         
         function generateDailyChallenge() {
@@ -5167,9 +5485,9 @@
             // Performance monitoring
             if (userSettings.showFPS) {
                 lastTime = performance.now();
-            }
+            	}
             
-            // Preload critical elements
+        // Preload critical elements
             setTimeout(() => {
                 updateCanvasSize();
             }, 100);
